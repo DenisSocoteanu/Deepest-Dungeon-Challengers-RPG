@@ -89,13 +89,14 @@ public class ScenaLivello {
         inputFocus.requestFocus();
 
 
-        //Viene popolata l'arena  di gioco colonna per colonna, riga per riga
+        //Viene popolata l'arena di gioco colonna per colonna, riga per riga
         IniGrid(pannelloArena, lArena, hArena, 64);
 
         for (int i = 0; i < lArena; i++) {
             for (int j = 0; j < hArena; j++) {
 
                 Pane p = new Pane();
+                p.setId("p" + i + "-" + j);
                 p.setStyle("-fx-background-image: url('/icons/Cobblestone.png'); -fx-background-repeat: no-repeat; -fx-background-size: cover; -fx-image-rendering: pixelated;");
                 pannelloArena.add(p, i, j);
             }
@@ -136,7 +137,14 @@ public class ScenaLivello {
     public void SpawnEntity(Image icon, String id, int x, int y) {
         ImageView iv = new ImageView(icon);
         iv.setId(id);
-        pannelloArena.add(iv, x, y);
+        for(Node n : pannelloArena.getChildren()) {
+          if ( n instanceof Pane && n.getId().equals("p" + x + "-" + y))
+          {
+              System.out.println("trovato " + n.getId());
+              ((Pane) n).getChildren().add(iv);
+          }
+        }
+
     }
 
     public void MoveEntity(Image icon, String id, int x, int y)
@@ -144,39 +152,58 @@ public class ScenaLivello {
         ImageView f = new ImageView(icon);
         f.setId(id);
 
-
-        for (Node e: pannelloArena.getChildren())
-        {
-            if (e instanceof ImageView)
+        for(Node n : pannelloArena.getChildren()) {
+            if (n instanceof Pane && !((Pane) n).getChildren().isEmpty())
             {
-                System.out.println(e.getClass().getName() + " ||| " + e.getId() + " ||| f.id = " + f.getId());
-                if (f.getId().equals(e.getId()))
+                System.out.println(n.getId() + " | " + ((Pane) n).getChildren().size());
+                if(((Pane) n).getChildren().stream().anyMatch(o -> o.getId().equals(f.getId())))
                 {
-                    System.out.println("trovato l'elemento");
-                    pannelloArena.getChildren().remove(e);
-                    pannelloArena.add(f, x, y);
+                    System.out.println("SNIPED" + n.getId());
+                    ((Pane) n).getChildren().remove(0, ((Pane) n).getChildren().size());
+                    ((Pane) pannelloArena.getChildren().stream().filter(p -> p instanceof Pane && p.getId().equals("p" + x + "-" + y)).findFirst().get()).getChildren().add(f);
                     break;
                 }
             }
-        };
+        }
     }
 
     public void RemoveEntity(String id)
     {
         for (Node e: pannelloArena.getChildren())
         {
-            if (e instanceof ImageView)
+            if (e instanceof Pane && !((Pane)e).getChildren().isEmpty())
             {
-                if (id.equals(e.getId()))
+                if(((Pane) e).getChildren().stream().anyMatch(o -> o.getId().equals(id)))
                 {
                     System.out.println("ELIMINATO l'elemento");
-                    pannelloArena.getChildren().remove(e);
+                    ((Pane) e).getChildren().remove(0, ((Pane) e).getChildren().size());
                     break;
                 }
             }
         };
 
     }
+
+    public void AttachObj(String id, Object whatever)
+    {
+        for (Node e: pannelloArena.getChildren())
+        {
+            if (e instanceof Pane)
+            {
+                System.out.println("PANNELLO " + ((Pane) e).getChildren().size());
+                if(((Pane)e).getChildren().stream().findFirst().isPresent())
+                {
+                    System.out.println(((Pane)e).getChildren().stream().findFirst().get().getId());
+                    ImageView iv = (ImageView) ((Pane)e).getChildren().stream().findAny().get();
+                    if(iv.getId().equals(id))
+                    {
+                        System.out.println("TROVATO IL PANNELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+                    }
+                }
+            }
+        };
+    }
+
 
     public void ReturnToMM() {
         MainMenu mm = new MainMenu();

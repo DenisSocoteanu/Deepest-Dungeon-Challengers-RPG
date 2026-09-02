@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg123015;
 
 
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -10,10 +11,9 @@ public class Avatar extends Personaggio {
 
     ScenaLivello scena;
     Auxiliary target;
-    XYVector upperLimits;
     AtomicReference<TypeOfAction> toa = new AtomicReference<>();
 
-    public Avatar(String nome, ScenaLivello scena, int ulX, int ulY)
+    public Avatar(String nome, ScenaLivello scena, XYVector dimArena)
     {
         setNome(nome);
         setIcon("/icons/AvatarSprite.png");
@@ -21,11 +21,14 @@ public class Avatar extends Personaggio {
         setDEX(2);
         target = new Auxiliary("targetSelection","/icons/TargetSelection.gif");
 
-        upperLimits = new XYVector(ulX, ulY);
+        upperLimits = dimArena;
         this.scena = scena;
 
+        hpbar = new ProgressBar();
+        hpbar.setVisible(false);
+
         AtomicBoolean focusTarget = new AtomicBoolean(false);
-        scena.getScenaLivello().setOnKeyPressed(event -> {
+        /*scena.getScenaLivello().setOnKeyPressed(event -> {
             {
                 switch(event.getCode()){
                     case W:
@@ -149,39 +152,18 @@ public class Avatar extends Personaggio {
                 }
             }
 
-        });
+        });*/
 
     }
 
 
-    //Esegue TakeAction prima che possa prendere l'input.
     @Override
     public Action TakeAction()
     {
-
-        synchronized (this)
-        {
-            try {
-                wait(5000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println("FINITO IL TEMPO");
-        }
-
-        //System.out.println("Hai fatto un'azione!" + toa.get().toString());
-        if(toa.get() != null)
-        {
-            Action a = new Action(position, toa.get());
-            toa.set(null);
-            return a;
-        }
-        else
-            return null;
-
+        return null;
     }
 
-    private void Attack() {
+    public void Attack() {
         scena.RemoveEntity(target.name);
 
     }
@@ -198,9 +180,10 @@ public class Avatar extends Personaggio {
 
     }
 
-    private void CompleteMovement(int x, int y)
+    @Override
+    public void Move(XYVector movement)
     {
-        Move(x, y);
+        UpdatePosition(movement);
         MoveTarget(getIcon(), getName(), position.getX(), position.getY());
         System.out.println("POSIZIONE: " + position.getX() + ", " + position.getY());
     }

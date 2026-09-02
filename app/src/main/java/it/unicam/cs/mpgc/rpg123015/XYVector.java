@@ -22,4 +22,9 @@ public class XYVector {
     public void setY(int y) {
         this.y = y;
     }
+
+    public void PrintXY()
+    {
+        System.out.println(x+","+y);
+    }
 }

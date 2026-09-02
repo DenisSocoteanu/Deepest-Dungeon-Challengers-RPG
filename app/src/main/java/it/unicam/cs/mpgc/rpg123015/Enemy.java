@@ -2,10 +2,12 @@ package it.unicam.cs.mpgc.rpg123015;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.ProgressBar;
 
 public class Enemy extends Personaggio{
+    ProgressBar hpbar = new ProgressBar();
 
-    public Enemy(LevelDifficulty diff, int numero){
+    public Enemy(LevelDifficulty diff, int numero, XYVector dimArena) {
         name = "e-" + diff.name() + numero;
 
         switch(diff)
@@ -39,6 +41,10 @@ public class Enemy extends Personaggio{
                 hp = maxHp;
                 break;
         }
+
+        upperLimits = dimArena;
+        hpbar = new ProgressBar();
+        hpbar.setVisible(true);
     }
 
     @Override
@@ -47,5 +53,19 @@ public class Enemy extends Personaggio{
         System.out.println(name + " ha compiuto un'azione!");
         return null;
     }
+
+    public void RegHit(int dmg) {
+        hp -= dmg;
+        System.out.println(name + " HP: " + hp);
+        UpdateHPBar();
+    }
+
+    public void UpdateHPBar()
+    {
+        double percentile = hp/maxHp;
+        hpbar.setProgress(percentile);
+    }
+
+
 
 }

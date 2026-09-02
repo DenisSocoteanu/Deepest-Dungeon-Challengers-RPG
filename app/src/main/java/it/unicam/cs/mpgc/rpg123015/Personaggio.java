@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg123015;
 
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 
 import java.util.Random;
@@ -10,9 +11,12 @@ public abstract class Personaggio implements Actions {
     public int hp = maxHp;
     private int STR, DEX;
     private Image icon;
+    public ProgressBar hpbar;
 
     //Coordinate
     public XYVector position;
+    //Ogni personaggio esiste nei confini dell'arena. Pertanto, ogni personaggio è cosciente delle dimensioni dell'arena. La dimensione massima è chiamata upper-limit
+    public XYVector upperLimits;
 
     public Personaggio() {}
 
@@ -52,14 +56,18 @@ public abstract class Personaggio implements Actions {
         position = new XYVector(x, y);
     }
 
-    public void Move(int x, int y) {
-        position.setX(position.getX() + x);
-        position.setY(position.getY() + y);
+    public void Move(XYVector movement) {
+        System.out.println("Placeholder Movement");
     }
 
     public Action TakeAction() {
         System.out.println(name + " ha agito!");
         return null;
+    }
+
+    public void UpdatePosition(XYVector movement) {
+        position.setX(movement.getX());
+        position.setY(movement.getY());
     }
 
     public Image getIcon() {
@@ -68,5 +76,12 @@ public abstract class Personaggio implements Actions {
     public void setIcon(String s) {
         icon = new Image(s);
     }
+
+    public void RegHit(int dmg) {
+        hp -= dmg;
+        System.out.println(name + " HP: " + hp);
+    }
+
+
 
 }
