@@ -9,8 +9,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Avatar extends Personaggio {
 
-    ScenaLivello scena;
+    public int exp = 0;
+    public int expToLvlUp = 5;
+    private int lvl = 1;
+    public ProgressBar expBar;
+
     Auxiliary target;
+    ScenaLivello scena;
     AtomicReference<TypeOfAction> toa = new AtomicReference<>();
 
     public Avatar(String nome, ScenaLivello scena, XYVector dimArena)
@@ -20,11 +25,17 @@ public class Avatar extends Personaggio {
         setSTR(1);
         setDEX(2);
         target = new Auxiliary("targetSelection","/icons/TargetSelection.gif");
+        setAttackAnim1("Avatar_AttAni_1","/icons/SwordSlash.gif");
 
         upperLimits = dimArena;
         this.scena = scena;
 
         hpbar = new ProgressBar();
+        hpbar.setVisible(false);
+
+        expBar = new ProgressBar();
+        expBar.setPrefHeight(24);
+        expBar.setStyle("-fx-accent: green;");
         hpbar.setVisible(false);
 
         AtomicBoolean focusTarget = new AtomicBoolean(false);
@@ -189,6 +200,32 @@ public class Avatar extends Personaggio {
     }
 
     public void ShareStats() {
-        scena.getStats(maxHp,getSTR(),getDEX());
+        scena.getStats(maxHp,getSTR(),getDEX(), lvl, exp, expToLvlUp, expBar);
+        updateExpBar();
+    }
+
+    public void gainExp(int xp)
+    {
+        System.out.println("GUADAGNATI EXP: " + xp);
+        exp = exp + xp;
+        if (exp >= expToLvlUp)
+        {
+            lvlUp();
+        }
+        updateExpBar();
+    }
+
+    private void updateExpBar()
+    {
+        double percentile = ((double) exp / expToLvlUp);
+        expBar.setProgress(percentile);
+        scena.updateEXP(lvl, exp, expToLvlUp);
+    }
+
+    private void lvlUp()
+    {
+        lvl++;
+        exp = exp - expToLvlUp;
+        expToLvlUp = expToLvlUp + (int) Math.sqrt(expToLvlUp + lvl);
     }
 }

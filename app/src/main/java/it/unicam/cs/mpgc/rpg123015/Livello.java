@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg123015;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
@@ -33,11 +35,11 @@ public class Livello {
         genArena(diff);
 
         arena = new Personaggio[lArena][hArena];
-        scena = new ScenaLivello(id);
+        scena = new ScenaLivello(id, lArena, hArena);
 
+        scena.genArena(lArena, hArena);
         hero = new Avatar("Guglielmo", scena, new XYVector(lArena,hArena));
         hero.ShareStats();
-        scena.genArena(lArena, hArena);
         initiativeOrder.add(hero);
         initiativeOrder.addAll(enemies);
 
@@ -51,9 +53,32 @@ public class Livello {
     public void GameStart() {
 
         System.out.println("GAME START!");
+        boolean gameOver = false;
+        Action eAction;
 
-        Action azione;
-        initController();
+        synchronized (this)
+        {
+            for (Personaggio e : initiativeOrder) {
+                if (e instanceof Enemy){
+                    eAction = e.TakeAction();
+                    try {
+                        wait(300);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                else {
+                    System.out.println("E' IL TUO TURNO QUA DOVRESTI FARE QUALCOSA MA WAIT 300");
+                    try {
+                        initController();
+                        wait(300);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+
+        }
 
     }
 
@@ -91,49 +116,36 @@ public class Livello {
         System.out.println("Generating " + diff + " Arena..." );
 
         Random RANDOM = new Random();
-        nEnemies = 0;
 
         //In base alla DIFFICOLTA' del livello, verrà generata un'arena con le adeguate prioprietà.
         switch (diff){
             case EASY:
-                nEnemies = RANDOM.nextInt(1,4);
                 lArena = RANDOM.nextInt(5,7);
                 hArena = RANDOM.nextInt(5,7);
+                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(17));
 
-                for(int i = 0; i < nEnemies; i++){
-                    enemies.add(new Enemy(diff, i, new XYVector(lArena, hArena)));
-                }
                 break;
             case MEDIUM:
                 //Generati il numero di nemici ed i nemici
-                nEnemies = RANDOM.nextInt(1,9);
                 lArena = RANDOM.nextInt(6,9);
                 hArena = RANDOM.nextInt(6,9);
+                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(37));
 
-                for(int i = 0; i < nEnemies; i++){
-                    enemies.add(new Enemy(diff, i,  new XYVector(lArena, hArena)));
-                }
                 break;
             case HARD:
                 //Generati il numero di nemici ed i nemici
-                nEnemies = RANDOM.nextInt(1,13);
                 lArena = RANDOM.nextInt(7,11);
                 hArena = RANDOM.nextInt(7,11);
+                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(57));
 
-                for(int i = 0; i < nEnemies; i++){
-                    enemies.add(new Enemy(diff, i,  new XYVector(lArena, hArena)));
-                }
                 break;
             case BOSS:
                 //Generati il numero di nemici, 1 boss ed il resto dei nemici
-                nEnemies = RANDOM.nextInt(1,9);
                 lArena = RANDOM.nextInt(8,13);
                 hArena = RANDOM.nextInt(8,13);
 
                 enemies.add(new Enemy(diff, 0, new XYVector(lArena, hArena)));
-                for(int i = 0; i < nEnemies; i++){
-                    enemies.add(new Enemy(LevelDifficulty.EASY, i, new XYVector(lArena, hArena)));
-                }
+                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(35));
                 break;
         }
 
@@ -156,6 +168,14 @@ public class Livello {
             XYVector targetPos;
             Action heroAction;
 
+            /*posso mettere tutti i controlli dentro try/finally. Metto tutto dentro un altro if che controlla se il player
+            * ha ancora azioni disponibili. se non ce le ha, gli input non funzionano!
+            *try
+            {
+
+            }finally {
+                System.out.println("QUA PUOI CHIAMARE ENEMY ACTIONSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+            }*/
             if(!focusTarget.get())
             {
                 switch(event.getCode())
@@ -241,9 +261,13 @@ public class Livello {
             for(Personaggio p : initiativeOrder)
             {
                 if (p.getName().equals(azione.getMasterID()))
+                {
                     azione.setDmg(p.getSTR());
+                    azione.setAttAnim(p.getAttackAnim1());
+                }
             }
         }
+
         Personaggio actor;
         if(azione.getTypeOfAction().equals(TypeOfAction.MOVEMENT))
         {
@@ -270,15 +294,59 @@ public class Livello {
             actor =  arena[azione.getXYVector().getX()][azione.getXYVector().getY()];
             if(actor != null)
             {
+                /*
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
+                        return null;
+                    }
+                };
+                task.run();
+                * Posso usare questo task per cancellare l'aux in qualche modo ma non so come
+                */
+                scena.SpawnAux(azione.getAttackAnimation(), actor.getX(),  actor.getY());
+                scena.RemoveAux(azione.getAttackAnimation());
                 actor.RegHit(azione.getDMG());
-                scena.AttachObj(actor.name, actor.hpbar);
+
+                //scena.AttachObj(actor.name, actor.hpbar);
+
                 if(actor.hp <= 0)
                 {
                     scena.RemoveEntity(arena[azione.getXYVector().getX()][azione.getXYVector().getY()].getName());
                     arena[azione.getXYVector().getX()][azione.getXYVector().getY()] = null;
+
+                    if(actor instanceof Enemy)
+                    {
+                        hero.gainExp(((Enemy) actor).xpOnKill);
+                        enemies.remove(actor);
+                        if(enemies.isEmpty())
+                            System.out.println("VICTORY!");
+                    }
+                    else
+                    {
+
+                        GameOver();
+
+                    }
+
                 }
 
             }
         }
+    }
+
+    private void GameOver()
+    {
+        scena.ReturnToMM();
     }
 }

@@ -8,6 +8,9 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.*;
 import javafx.scene.layout.*;
+import javafx.scene.image.Image;
+
+import java.util.Objects;
 
 
 public class App extends Application {
@@ -27,6 +30,9 @@ public class App extends Application {
         synchronized (scena = mm.mmScene)
         {
             primaryStage.setScene(scena);
+            primaryStage.setResizable(false);
+            primaryStage.getIcons().add(new Image("/icons/AvatarSprite.png"));
+            primaryStage.setTitle("Dungeon Hoards");
             primaryStage.show();
         }
 

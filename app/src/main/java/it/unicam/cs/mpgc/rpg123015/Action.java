@@ -1,22 +1,26 @@
 package it.unicam.cs.mpgc.rpg123015;
 
+import javafx.scene.image.Image;
+
 public class Action {
     private String masterID;
     private XYVector targetPosition;
     private TypeOfAction type;
 
-    public Action(XYVector targetPosition, TypeOfAction type, String idperformer) {
-        setMasterID(idperformer);
+    public Action(XYVector targetPosition, TypeOfAction type, String actor) {
+        setMasterID(actor);
         setXYVector(targetPosition);
         setTypeOfAction(type);
     }
 
     private int dmg;
-    public Action(XYVector targetPosition, TypeOfAction type , int dmg, String idperformer) {
-        setMasterID(idperformer);
+    private Auxiliary attAnim;
+    public Action(XYVector targetPosition, TypeOfAction type , int dmg, Image attackAnimation, String actor) {
+        setMasterID(actor);
         setXYVector(targetPosition);
         setTypeOfAction(type);
         setDmg(dmg);
+
     }
 
     public String getMasterID() {return masterID;}
@@ -42,4 +46,7 @@ public class Action {
     public void  setTypeOfAction(TypeOfAction type) {
         this.type = type;
     }
+
+    public Auxiliary getAttackAnimation(){return attAnim;}
+    public void setAttAnim(Auxiliary attAnim){this.attAnim = attAnim;}
 }

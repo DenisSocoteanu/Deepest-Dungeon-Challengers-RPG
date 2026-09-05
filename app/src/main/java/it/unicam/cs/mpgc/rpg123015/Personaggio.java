@@ -10,8 +10,9 @@ public abstract class Personaggio implements Actions {
     public int maxHp = 10;
     public int hp = maxHp;
     private int STR, DEX;
-    private Image icon;
     public ProgressBar hpbar;
+    private Image icon;
+    private Auxiliary AttackAnim1;
 
     //Coordinate
     public XYVector position;
@@ -19,12 +20,6 @@ public abstract class Personaggio implements Actions {
     public XYVector upperLimits;
 
     public Personaggio() {}
-
-    public Personaggio(String name, int STR, int DEX) {
-        this.name = name;
-        this.STR = STR;
-        this.DEX = DEX;
-    }
 
     public String getName() {
         return name;
@@ -82,6 +77,10 @@ public abstract class Personaggio implements Actions {
         System.out.println(name + " HP: " + hp);
     }
 
-
-
+    public void setAttackAnim1(String id, String url) {
+        AttackAnim1 = new Auxiliary(id, url);
+    }
+    public Auxiliary getAttackAnim1(){
+        return AttackAnim1;
+    }
 }

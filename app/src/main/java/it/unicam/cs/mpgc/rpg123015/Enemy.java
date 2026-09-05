@@ -5,10 +5,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.ProgressBar;
 
 public class Enemy extends Personaggio{
-    ProgressBar hpbar = new ProgressBar();
 
-    public Enemy(LevelDifficulty diff, int numero, XYVector dimArena) {
-        name = "e-" + diff.name() + numero;
+    public int xpOnKill;
+
+    public Enemy(LevelDifficulty diff, int numeroId, XYVector dimArena) {
+        name = "e-" + diff.name() + numeroId;
 
         switch(diff)
         {
@@ -18,6 +19,7 @@ public class Enemy extends Personaggio{
                 setDEX(1);
                 maxHp = 3;
                 hp = maxHp;
+                xpOnKill = 2;
                 break;
             case MEDIUM:
                 setIcon("/icons/MEDIUMEnemy_Sprite.png");
@@ -25,6 +27,7 @@ public class Enemy extends Personaggio{
                 setDEX(2);
                 maxHp = 4;
                 hp = maxHp;
+                xpOnKill = 3;
                 break;
             case HARD:
                 setIcon("/icons/HARDEnemy_Sprite.png");
@@ -32,6 +35,7 @@ public class Enemy extends Personaggio{
                 setDEX(2);
                 maxHp = 5;
                 hp = maxHp;
+                xpOnKill = 4;
                 break;
             case BOSS:
                 setIcon("/icons/BOSSEnemy_Sprite.png");
@@ -39,11 +43,14 @@ public class Enemy extends Personaggio{
                 setDEX(3);
                 maxHp = 8;
                 hp = maxHp;
+                xpOnKill = 6;
                 break;
         }
 
         upperLimits = dimArena;
         hpbar = new ProgressBar();
+        hpbar.setPrefSize(64,16);
+        hpbar.setStyle("-fx-background-color: black;-fx-accent: red;");
         hpbar.setVisible(true);
     }
 
@@ -62,7 +69,7 @@ public class Enemy extends Personaggio{
 
     public void UpdateHPBar()
     {
-        double percentile = hp/maxHp;
+        double percentile = ((double) hp /maxHp);
         hpbar.setProgress(percentile);
     }
 

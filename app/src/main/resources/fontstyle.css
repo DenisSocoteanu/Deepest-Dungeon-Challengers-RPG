@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'Power Red and Green';
+    src: url('fonts/pkmnfl.ttf');
+}
+
+.text {
+    -fx-font-family: "Power Red and Green";
+    -fx-font-size: 16;
+
+}

@@ -10,6 +10,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class MainMenu{
 
     Button btnNewGame = new Button("New Gaaaaaaaaaaaaaaaaaaaaame");
@@ -20,6 +22,7 @@ public class MainMenu{
 
 
     public MainMenu() {
+        mmScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/fontstyle.css")).toExternalForm());
 
         Image titleCard = new Image("icons/TitleCard.png");
         ImageView titleCardView = new ImageView(titleCard);
