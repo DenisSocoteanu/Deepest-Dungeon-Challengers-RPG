@@ -6,5 +6,20 @@
 .text {
     -fx-font-family: "Power Red and Green";
     -fx-font-size: 16;
+}
+
+#pannelloMM{
+    -fx-background-color: #ff00ff;
+}
+
+#actionLogPane {
+    -fx-font-family: "Power Red and Green";
+    -fx-font-size: 16;
+}
+
+#statsPane {
+    -fx-font-family: "Power Red and Green";
+    -fx-font-size: 20;
+    -fx-font-style:bold;
 
 }

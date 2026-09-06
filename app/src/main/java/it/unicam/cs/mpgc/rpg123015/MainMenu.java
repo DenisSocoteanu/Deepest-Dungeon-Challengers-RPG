@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg123015;
 
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -9,8 +10,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class MainMenu{
 
@@ -28,17 +31,33 @@ public class MainMenu{
         ImageView titleCardView = new ImageView(titleCard);
 
         btnNewGame.setOnAction(e -> {
-            Livello livello = new Livello();
-            Stage x = (Stage) btnNewGame.getScene().getWindow();
-            x.requestFocus();
-            x.setScene(livello.getScenaLivello());
-            livello.GameStart();
+
+            TextInputDialog td = new TextInputDialog("");
+            td.setResizable(false);
+            td.setHeaderText("Quale sarà il nome di questo eroe?");
+            td.setGraphic(new ImageView(new Image("/icons/MysteryIdentity.png")));
+            td.getEditor().setStyle("-fx-font-family: Power Red and Green;");
+            Optional<String> result = td.showAndWait();
+            if (result.isEmpty()) {
+
+            }
+            else{
+                if(td.getEditor().getText().isEmpty())
+                    td.getEditor().setText("Guglielmo");
+                Livello livello = new Livello(td.getEditor().getText());
+                Stage x = (Stage) btnNewGame.getScene().getWindow();
+                x.requestFocus();
+                x.setScene(livello.getScenaLivello());
+                livello.GameStart();
+            }
+
         });
+
         btnQuit.setOnAction(e -> {
             Stage x = (Stage) btnQuit.getScene().getWindow();x.close();
         });
 
-        pannello.setStyle("-fx-background-color: #ff0000;");
+        pannello.setId("pannelloMM");
         pannello.setAlignment(Pos.CENTER);
         pannello.setVgap(16);
         pannello.setPrefWrapLength(494);
@@ -48,25 +67,6 @@ public class MainMenu{
         Insets insets = new Insets(20, 20, 60, 20);
         pannello.setPadding(insets);
         System.out.println("MAIN MENU PRESENTATO.");
-        mmScene.setOnKeyPressed(event -> {
-            {
-                switch(event.getCode()){
-                    case W:
-                        System.out.println("W");
-                        break;
-                    case A:
-                        System.out.println("A");
-                        break;
-                    case S:
-                        System.out.println("S");
-                        break;
-                    case D:
-                        System.out.println("D");
-                        break;
-                }
-            }
-
-        });
 
     }
 

@@ -17,7 +17,7 @@ public class Enemy extends Personaggio{
                 setIcon("/icons/EASYEnemy_Sprite.png");
                 setSTR(1);
                 setDEX(1);
-                maxHp = 3;
+                maxHp = 17;
                 hp = maxHp;
                 xpOnKill = 2;
                 break;
@@ -25,7 +25,7 @@ public class Enemy extends Personaggio{
                 setIcon("/icons/MEDIUMEnemy_Sprite.png");
                 setSTR(1);
                 setDEX(2);
-                maxHp = 4;
+                maxHp = 23;
                 hp = maxHp;
                 xpOnKill = 3;
                 break;
@@ -33,7 +33,7 @@ public class Enemy extends Personaggio{
                 setIcon("/icons/HARDEnemy_Sprite.png");
                 setSTR(2);
                 setDEX(2);
-                maxHp = 5;
+                maxHp = 35;
                 hp = maxHp;
                 xpOnKill = 4;
                 break;
@@ -41,7 +41,7 @@ public class Enemy extends Personaggio{
                 setIcon("/icons/BOSSEnemy_Sprite.png");
                 setSTR(3);
                 setDEX(3);
-                maxHp = 8;
+                maxHp = 53;
                 hp = maxHp;
                 xpOnKill = 6;
                 break;

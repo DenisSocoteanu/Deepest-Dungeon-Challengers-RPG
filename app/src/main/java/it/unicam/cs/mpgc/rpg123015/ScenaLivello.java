@@ -24,6 +24,7 @@ import javafx.scene.media.MediaPlayer;
 public class ScenaLivello {
 
     private MediaPlayer mp;
+    private StackPane rootStackPane = new StackPane();
     private BorderPane pannello = new BorderPane();
     private GridPane pannelloArena;
     private GridPane stats;
@@ -37,26 +38,34 @@ public class ScenaLivello {
 
     //Genera ed organizza gli elementi grafici della scena, come il numero delle colonne e righe, le celle ed il loro aspetto.
     private void genScenaLayout(int id, int lArena, int hArena) {
-        int rightArea =200, bottomArea = 128;
+        int leftArea =200, bottomArea = 128;
         int lScena, hScena;
-        lScena = rightArea+(lArena*64)+64;
-        hScena = (hArena*64)+bottomArea;
-        scenaLivello = new Scene(pannello, lScena, hScena);
+        lScena = leftArea+(lArena*64)+64;
+        hScena = (hArena*64)+bottomArea+12;
+
+        rootStackPane.getChildren().add(pannello);
+        scenaLivello = new Scene(rootStackPane,lScena,hScena);
+
         scenaLivello.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/fontstyle.css")).toExternalForm());
 
+        //------------ Top Area -----------------------
         Text titoloLivello = new Text("Livello " + id);
         pannello.setTop(titoloLivello);
 
+        //------------ Right Area -----------
         stats = new GridPane(0,0);
+        stats.setId("statsPane");
         pannello.setRight(stats);
 
 
         //----------- Left Area ------------------------
         TextArea actionLog = new TextArea("Action Log");
+        actionLog.setId("actionLogPane");
+        actionLog.setStyle("-fx-font-family:'Power Red and Green';");
         actionLog.setFocusTraversable(false);
         actionLog.setEditable(false);
         actionLog.setWrapText(true);
-        actionLog.setPrefWidth(rightArea);
+        actionLog.setPrefWidth(leftArea);
         pannello.setLeft(actionLog);
 
         //----------- Center Area -------------------------
@@ -185,6 +194,7 @@ public class ScenaLivello {
         }
     }
 
+    //AUX NON SI MUOVE PIU' DI 1 CASELLA FIX IT
     public void MoveAux(Auxiliary aux, int x, int y)
     {
         ImageView f = new ImageView(aux.getImage());
@@ -192,7 +202,7 @@ public class ScenaLivello {
 
         Pane p = FindPaneByChildId(aux.name);
         assert p != null;
-        p.getChildren().remove(0, p.getChildren().size());
+        p.getChildren().removeLast();
         ((Pane) pannelloArena.getChildren().stream()
                 .filter(o -> o instanceof Pane && o.getId().equals("p" + x + "-" + y))
                 .findFirst().get()).getChildren().add(f);
@@ -231,18 +241,27 @@ public class ScenaLivello {
 
     public void getStats(int maxHp, int STR, int DEX, int lvl, int exp, int maxexp, ProgressBar expBar) {
 
-        IniGrid(stats, 2, (int) Math.ceil((double) maxHp /2), 32);//Viene popolata l'area di destra con le stat del giocatore
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < (int) Math.ceil((double) maxHp /2); j++) {
+        IniGrid(stats, 2, (int) Math.ceil((double) maxHp /2)+1, 32);//Viene popolata l'area di destra con le stat del giocatore
 
-                Pane p = new Pane();
-                p.setStyle("-fx-background-image: url('/icons/Heart.png'); -fx-background-repeat: no-repeat; -fx-background-size: cover; -fx-image-rendering: pixelated;");
-                stats.add(p, i, j);
-            }
+        Pane ps = new Pane(), pd = new Pane();
+        ps.setStyle("-fx-background-image:'/icons/AvatarSprite.png';");
+        pd.setStyle("-fx-background-image:'/icons/SpeedBoot.png';");
+        ps.setId("strPane");pd.setId("dexPane");
+        ps.getChildren().add(new Text("STR " + STR));
+        pd.getChildren().add(new Text("DEX " + DEX));
+        stats.add(ps, 0, 0);
+        stats.add(pd, 1, 0);
+
+        for (int i = 0; i < maxHp; i++)
+        {
+            Pane p = new Pane();
+            ImageView iv = new ImageView(new Image("/icons/Heart.png"));
+            iv.setId("h"+i);
+            p.getChildren().add(iv);
+            p.setId("hp"+i);
+            System.out.println((i%2)+ ","+ (int) Math.floor((double) i /2));
+            stats.add(p, (i%2), (int) Math.floor((double) i /2) );
         }
-
-        stats.add(new Text("STR " + STR), 0, 5);
-        stats.add(new Text("DEX " + DEX), 1, 5);
 
         HBox expBox = new HBox(10);
 
@@ -267,5 +286,27 @@ public class ScenaLivello {
     {
         ((Text)((HBox)((Pane)pannello.getBottom()).getChildren().getFirst()).getChildren().getFirst()).setText(""+lvl);
         ((Text)((HBox)((Pane)pannello.getBottom()).getChildren().getFirst()).getChildren().getLast()).setText(exp + " / " + maxexp);
+    }
+
+    public void updateHP(int hp, int maxhp)
+    {
+
+    }
+
+    public void updateSTR(int str)
+    {
+
+    }
+
+    public void updateDEX(int dex)
+    {
+
+    }
+
+
+
+
+    public StackPane getStackPane() {
+        return rootStackPane;
     }
 }

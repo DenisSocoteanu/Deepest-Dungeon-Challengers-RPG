@@ -1,14 +1,8 @@
 package it.unicam.cs.mpgc.rpg123015;
 
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,14 +14,15 @@ public class Livello {
     private LevelDifficulty diff;
     private ScenaLivello scena;
     private Avatar hero;
+    public int heroTurns;
 
     private int lArena,hArena;
     private int nEnemies;
-    private List<Enemy> enemies = new ArrayList<Enemy>();
+    private final List<Enemy> enemies = new ArrayList<Enemy>();
     private List<Personaggio> initiativeOrder = new ArrayList<>();
-    private Personaggio[][] arena;
+    private final Personaggio[][] arena;
 
-    public Livello() {
+    public Livello(String heroName) {
 
         id = this.hashCode();
 
@@ -38,7 +33,8 @@ public class Livello {
         scena = new ScenaLivello(id, lArena, hArena);
 
         scena.genArena(lArena, hArena);
-        hero = new Avatar("Guglielmo", scena, new XYVector(lArena,hArena));
+        hero = new Avatar(heroName, scena, new XYVector(lArena,hArena));
+        heroTurns = hero.getDEX();
         hero.ShareStats();
         initiativeOrder.add(hero);
         initiativeOrder.addAll(enemies);
@@ -53,33 +49,7 @@ public class Livello {
     public void GameStart() {
 
         System.out.println("GAME START!");
-        boolean gameOver = false;
-        Action eAction;
-
-        synchronized (this)
-        {
-            for (Personaggio e : initiativeOrder) {
-                if (e instanceof Enemy){
-                    eAction = e.TakeAction();
-                    try {
-                        wait(300);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-                else {
-                    System.out.println("E' IL TUO TURNO QUA DOVRESTI FARE QUALCOSA MA WAIT 300");
-                    try {
-                        initController();
-                        wait(300);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            }
-
-        }
-
+        initController();
     }
 
     private void SpawnEntity(Personaggio e) {
@@ -227,21 +197,43 @@ public class Livello {
                 switch(event.getCode())
                 {
                     case W:
+                        if (hero.target.position.getY() == 0)
+                        {scena.PlayOOBsound();break;}
+
                         System.out.println("TARGET UP");
+                        scena.MoveAux(hero.target, hero.target.getX(), hero.target.getY()-1 );
+                        hero.target.UpdatePosition(new XYVector(hero.target.getX(), hero.target.getY()-1));
                         break;
                     case A:
+                        if (hero.target.position.getX() == 0)
+                        {scena.PlayOOBsound();break;}
+
                         System.out.println("TARGET LEFT");
+                        scena.MoveAux(hero.target, hero.target.getX()-1, hero.target.getY() );
+                        hero.target.UpdatePosition(new XYVector(hero.target.getX()-1, hero.target.getY()));
                         break;
                     case S:
+                        if (hero.target.position.getY() == hArena-1)
+                        {scena.PlayOOBsound();break;}
+
                         System.out.println("TARGET DOWN");
+                        scena.MoveAux(hero.target, hero.target.getX(), hero.target.getY()+1 );
+                        hero.target.UpdatePosition(new XYVector(hero.target.getX(), hero.target.getY()+1));
                         break;
                     case D:
+                        if (hero.target.position.getX() == lArena-1)
+                        {scena.PlayOOBsound();break;}
+
                         System.out.println("TARGET RIGHT");
+                        scena.MoveAux(hero.target, hero.target.getX()+1, hero.target.getY() );
+                        hero.target.UpdatePosition(new XYVector(hero.target.getX()+1, hero.target.getY()));
                         break;
                     case ENTER:
                     case Z:
                         System.out.println("NOW FOCUSING PLAYER");
-                        hero.Attack();
+                        Action azioneEroe = new Action(hero.target.position, TypeOfAction.ATTACK, hero.getSTR(), hero.getAttackAnim1().getImage(), hero.name);
+                        scena.RemoveAux(hero.target);
+                        ExecuteTurn(azioneEroe);
                         focusTarget.set(false);
                         break;
                     case ESCAPE:

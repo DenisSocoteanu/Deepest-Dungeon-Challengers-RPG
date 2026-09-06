@@ -29,6 +29,7 @@ public class App extends Application {
         MainMenu mm = new MainMenu();
         synchronized (scena = mm.mmScene)
         {
+            scena.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/fontstyle.css")).toExternalForm());
             primaryStage.setScene(scena);
             primaryStage.setResizable(false);
             primaryStage.getIcons().add(new Image("/icons/AvatarSprite.png"));
