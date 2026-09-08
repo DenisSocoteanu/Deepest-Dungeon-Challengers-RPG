@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg123015;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -11,7 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
+import javafx.util.Duration;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -67,7 +69,7 @@ public class MainMenu{
         Insets insets = new Insets(20, 20, 60, 20);
         pannello.setPadding(insets);
         System.out.println("MAIN MENU PRESENTATO.");
-
+        System.out.println(pannello.getChildren().size());
     }
 
 

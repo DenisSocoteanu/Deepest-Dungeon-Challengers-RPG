@@ -1,25 +1,28 @@
 package it.unicam.cs.mpgc.rpg123015;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.event.EventHandler;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class ScenaLivello {
 
@@ -184,14 +187,30 @@ public class ScenaLivello {
     }
 
     public void SpawnAux(Auxiliary aux, int x, int y) {
-        ImageView iv = new ImageView(aux.getImage());
-        iv.setId(aux.name);
-        for(Node n : pannelloArena.getChildren()) {
-            if ( n instanceof Pane && n.getId().equals("p" + x + "-" + y))
-            {
-                ((Pane) n).getChildren().add(iv);
+
+        if(aux.auxType == AuxType.ANIMATION)
+        {
+            Timeline timeline = new Timeline();
+
+            ImageView iv = new ImageView();
+            iv.setId(aux.name);
+            Duration totalDelay = Duration.ZERO;
+
+            KeyFrame frame = new KeyFrame(totalDelay, e -> iv.setImage(new Image(aux.getImageDir())));
+            timeline.getKeyFrames().add(frame);
+            totalDelay = totalDelay.add(new Duration(480));
+            timeline.getKeyFrames().add(new KeyFrame(totalDelay, e -> iv.setImage(null)));
+
+            for(Node n : pannelloArena.getChildren()) {
+                if ( n instanceof Pane && n.getId().equals("p" + x + "-" + y))
+                {
+                    ((Pane) n).getChildren().add(iv);
+                    timeline.play();
+                    timeline.setOnFinished(e -> {pannello.getChildren().remove(iv);});
+                }
             }
         }
+
     }
 
     //AUX NON SI MUOVE PIU' DI 1 CASELLA FIX IT
@@ -243,24 +262,30 @@ public class ScenaLivello {
 
         IniGrid(stats, 2, (int) Math.ceil((double) maxHp /2)+1, 32);//Viene popolata l'area di destra con le stat del giocatore
 
-        Pane ps = new Pane(), pd = new Pane();
-        ps.setStyle("-fx-background-image:'/icons/AvatarSprite.png';");
-        pd.setStyle("-fx-background-image:'/icons/SpeedBoot.png';");
+        TextFlow ps = new TextFlow(), pd = new TextFlow();
         ps.setId("strPane");pd.setId("dexPane");
-        ps.getChildren().add(new Text("STR " + STR));
-        pd.getChildren().add(new Text("DEX " + DEX));
+
+        ps.setTextAlignment(TextAlignment.CENTER);
+        pd.setTextAlignment(TextAlignment.CENTER);
+
+        ps.getChildren().add(new Text(""+STR));
+        pd.getChildren().add(new Text(""+DEX));
+
         stats.add(ps, 0, 0);
         stats.add(pd, 1, 0);
+        ps.setStyle("-fx-background-image: url('/icons/AvatarSprite.png'); -fx-background-repeat: no-repeat; -fx-background-size: cover; -fx-image-rendering: pixelated;");
+        pd.setStyle("-fx-background-image: url('/icons/SpeedBoot.png'); -fx-background-repeat: no-repeat; -fx-background-size: cover; -fx-image-rendering: pixelated;");
+
 
         for (int i = 0; i < maxHp; i++)
         {
             Pane p = new Pane();
             ImageView iv = new ImageView(new Image("/icons/Heart.png"));
-            iv.setId("h"+i);
+            iv.setId("hi"+i);
             p.getChildren().add(iv);
             p.setId("hp"+i);
             System.out.println((i%2)+ ","+ (int) Math.floor((double) i /2));
-            stats.add(p, (i%2), (int) Math.floor((double) i /2) );
+            stats.add(p, (i%2), (int) Math.floor((double) i /2)+1 );
         }
 
         HBox expBox = new HBox(10);
@@ -288,23 +313,63 @@ public class ScenaLivello {
         ((Text)((HBox)((Pane)pannello.getBottom()).getChildren().getFirst()).getChildren().getLast()).setText(exp + " / " + maxexp);
     }
 
-    public void updateHP(int hp, int maxhp)
+    public void updateHP(int mod)
     {
+        if (mod>0) // mod > 0 = danni
+        {
+            List<Node> l = new java.util.ArrayList<>(stats.getChildren().stream().filter(n -> n.getId().contains("hp")).toList());
+            Collections.reverse(l);
 
+            int i = 0;
+            for ( Node n :  l ) {
+                if(i<mod){
+                    n.setId(n.getId().replace("hp", "bh"));
+                    ((ImageView)((Pane)n).getChildren().getFirst()).setImage(new Image("/icons/BrokenHeart.png"));
+                    i++;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        else if (mod<0) //mod < 0 = cura
+        {
+            int healed = 0;
+            for(Node n : stats.getChildren())
+            {
+                //System.out.println(n.getClass() + " | " + n.getId() + " | " + healed + "/"+ -mod);
+                if(n instanceof Pane && n.getId().contains("bh") && healed < -mod)
+                {
+                    ((ImageView)((Pane) n).getChildren().getFirst()).setImage(new Image("/icons/Heart.png"));
+                    n.setId(n.getId().replace("bh", "hp"));
+                    healed++;
+                }
+            }
+        }
+
+    }
+
+    public void updateMaxHP(int m)
+    {
+        m--;
+        Pane p = new Pane();
+        ImageView iv = new ImageView(new Image("/icons/BrokenHeart.png"));
+        iv.setId("hi"+m);
+        p.getChildren().add(iv);
+        p.setId("bh"+m);
+        System.out.println((m%2)+ ","+ (int) Math.floor((double) m /2));
+        stats.add(p, (m%2), (int) Math.floor((double) m /2)+1 );
     }
 
     public void updateSTR(int str)
     {
-
+        ((TextFlow)stats.getChildren().get(0)).getChildren().set(0, new Text(""+str));
     }
 
     public void updateDEX(int dex)
     {
-
+        ((TextFlow)stats.getChildren().get(1)).getChildren().set(0, new Text(""+dex));
     }
-
-
-
 
     public StackPane getStackPane() {
         return rootStackPane;

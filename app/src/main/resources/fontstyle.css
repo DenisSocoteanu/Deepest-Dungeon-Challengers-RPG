@@ -20,6 +20,19 @@
 #statsPane {
     -fx-font-family: "Power Red and Green";
     -fx-font-size: 20;
-    -fx-font-style:bold;
+    -fx-color: #ff0000;
 
+}
+
+#ts #td {
+    /*-fx-color: #ffffff;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000, 1px 1px 0 #000000;*/
+}
+
+#VictoryPane {
+    -fx-background-color: rgba(14,14,14,0.7);
+}
+
+.button {
+    -fx-font-family: "Power Red and Green";
 }

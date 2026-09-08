@@ -30,12 +30,14 @@ public class Avatar extends Personaggio {
     public Avatar(String nome, ScenaLivello scena, XYVector dimArena)
     {
         maxHp = 13;
+        hp = maxHp;
         setNome(nome);
         setIcon("/icons/AvatarSprite.png");
         setSTR(6);
         setDEX(2);
-        target = new Auxiliary("targetSelection","/icons/TargetSelection.gif");
-        setAttackAnim1("Avatar_AttAni_1","/icons/SwordSlash.gif");
+        setActionsPerTurn(getDEX());
+        target = new Auxiliary("targetSelection","/icons/TargetSelection.gif", AuxType.ALTRO);
+        setAttackAnim1("Avatar_AttAni_1","/icons/QuickSlash.gif");
 
         upperLimits = dimArena;
         this.scena = scena;
@@ -55,10 +57,6 @@ public class Avatar extends Personaggio {
     public Action TakeAction()
     {
         return null;
-    }
-
-    public void Attack() {
-        scena.RemoveEntity(target.name);
     }
 
     public void SelectTarget()
@@ -83,6 +81,14 @@ public class Avatar extends Personaggio {
     public void ShareStats() {
         scena.getStats(maxHp,getSTR(),getDEX(), lvl, exp, expToLvlUp, expBar);
         updateExpBar();
+    }
+
+
+    public void RegHit(int dmg)
+    {
+        super.RegHit(dmg);
+        scena.updateHP(dmg);
+
     }
 
     public void gainExp(int xp)
@@ -171,7 +177,7 @@ public class Avatar extends Personaggio {
 
         Text congarats = new Text("Sei salito di livello!");
         congarats.setStyle("-fx-font-size:48;-fx-font-family:'Power Red and Green';");
-        cardsGrid.add(congarats,3,0);
+        cardsGrid.add(congarats,2,0);
         cardsGrid.add(STRb, 1, 1);
         cardsGrid.add(DEXb, 2, 1);
         cardsGrid.add(mhpbox, 3, 1);
@@ -186,23 +192,24 @@ public class Avatar extends Personaggio {
             this.hp=maxHp;
         }
         System.out.println("HP: "+this.hp);
-        //scena.updateHP();
+        scena.updateHP(-hp);
     }
 
     public void AumentaMaxHP(int hp){
         this.maxHp+=hp;
-        this.hp+=hp;
         System.out.println("hp: "+ this.hp + "/" +this.maxHp);
-        //scena.updateHP();
+        scena.updateMaxHP(maxHp);
     }
 
     public void AumentaSTR(int s){
         setSTR(getSTR()+s);
         System.out.println("STR: "+this.getSTR());
+        scena.updateSTR(this.getSTR());
     }
 
     public void AumentaDEX(int s){
         setDEX(getDEX()+s);
         System.out.println("DEX: "+this.getDEX());
+        scena.updateDEX(this.getDEX());
     }
 }

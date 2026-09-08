@@ -7,9 +7,10 @@ import java.util.Random;
 
 public abstract class Personaggio implements Actions {
     public String name;
-    public int maxHp = 10;
+    public int maxHp;
     public int hp = maxHp;
     private int STR, DEX;
+    public int actionsPerTurn;
     public ProgressBar hpbar;
     private Image icon;
     private Auxiliary AttackAnim1;
@@ -39,6 +40,16 @@ public abstract class Personaggio implements Actions {
     }
     public void setDEX(int DEX) {
         this.DEX = DEX;
+    }
+
+    public int getActionsPerTurn() {return actionsPerTurn;}
+    public void setActionsPerTurn(int mod)
+    {
+        this.actionsPerTurn = mod;
+    }
+    public void decAPT()
+    {
+        setActionsPerTurn(getActionsPerTurn()-1);
     }
 
     public int getX() { return position.getX(); }
@@ -78,7 +89,7 @@ public abstract class Personaggio implements Actions {
     }
 
     public void setAttackAnim1(String id, String url) {
-        AttackAnim1 = new Auxiliary(id, url);
+        AttackAnim1 = new Auxiliary(id, url, AuxType.ANIMATION);
     }
     public Auxiliary getAttackAnim1(){
         return AttackAnim1;

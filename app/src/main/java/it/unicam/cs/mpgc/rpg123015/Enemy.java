@@ -47,6 +47,7 @@ public class Enemy extends Personaggio{
                 break;
         }
 
+        setActionsPerTurn(getDEX());
         upperLimits = dimArena;
         hpbar = new ProgressBar();
         hpbar.setPrefSize(64,16);
@@ -58,6 +59,9 @@ public class Enemy extends Personaggio{
     public Action TakeAction()
     {
         System.out.println(name + " ha compiuto un'azione!");
+        /*A questo metodo viene passata una copia di arena, lo stato attuale della mappa. Il nemico controlla ogni azione valida (movimento o attaccare)
+        * e la aggiunge a una piccola lista. L'azione viene presa casualmente da quella lista. return Action a livello che si occupa di chiamare executeTurn()
+        */
         return null;
     }
 
