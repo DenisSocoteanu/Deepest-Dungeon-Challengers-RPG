@@ -26,7 +26,7 @@ public class Livello {
     private List<Personaggio> initiativeOrder = new ArrayList<>();
     private final Personaggio[][] arena;
 
-    public Livello(String heroName) {
+    public Livello(Avatar h) {
 
         id = this.hashCode();
 
@@ -37,10 +37,12 @@ public class Livello {
         scena = new ScenaLivello(id, lArena, hArena);
 
         scena.genArena(lArena, hArena);
-        hero = new Avatar(heroName, scena, new XYVector(lArena,hArena));
+        hero = h;
+        hero.scena = scena;
         hero.ShareStats();
         initiativeOrder.add(hero);
         initiativeOrder.addAll(enemies);
+
 
         //Eseguire la funzione spawn di tutti gli elementi in initiative, aggiungerli ad arena[][] e aggiungere un'icona a scenalivello
         for (Personaggio e : initiativeOrder) {
@@ -89,7 +91,7 @@ public class Livello {
                 lArena = RANDOM.nextInt(8,13);
                 hArena = RANDOM.nextInt(8,13);
 
-                enemies.add(new Enemy(diff, 0, new XYVector(lArena, hArena)));
+                enemies.add(new Enemy(diff, 0));
                 enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(35));
                 break;
         }
@@ -231,7 +233,7 @@ public class Livello {
                         case ENTER:
                         case Z:
                             System.out.println("NOW FOCUSING PLAYER");
-                            Action azioneEroe = new Action(hero.target.position, TypeOfAction.ATTACK, hero.getSTR(), hero.getAttackAnim1().getImage(), hero.name);
+                            Action azioneEroe = new Action(hero.target.position, TypeOfAction.ATTACK, hero.getSTR(), hero.getAttackAnim1(), hero.name);
                             scena.RemoveAux(hero.target);
                             hero.decAPT();
                             ExecuteTurn(azioneEroe);
@@ -254,7 +256,9 @@ public class Livello {
             e.setActionsPerTurn(e.getDEX());
             while(e.getActionsPerTurn()>0)
             {
-                e.TakeAction();
+                Action a = e.TakeAction(arena);
+                System.out.println(a.getTypeOfAction());
+                ExecuteTurn(a);
                 e.decAPT();
             }
         }
@@ -265,7 +269,7 @@ public class Livello {
     //idealmente, questa funzione viene chiamata una (o più) volta per turno, ogni turno, ogni volta che un elemento fa qualcosa in gameStart.
     private void ExecuteTurn(Action azione)
     {
-        if(arena[azione.getXYVector().getX()][azione.getXYVector().getY()] != null)
+        if(azione.getTypeOfAction().equals(TypeOfAction.MOVEMENT) &&  arena[azione.getXYVector().getX()][azione.getXYVector().getY()] != null)
         {
             azione.setTypeOfAction(TypeOfAction.ATTACK);
             for(Personaggio p : initiativeOrder)
@@ -296,6 +300,7 @@ public class Livello {
             arena[azione.getXYVector().getX()][azione.getXYVector().getY()] = actor;
             arena[a][b] = null;
             actor.Move(azione.getXYVector());
+            scena.MoveEntity(actor.getIcon(),actor.name, azione.getXYVector().getX(), azione.getXYVector().getY());
             System.out.println(azione.getMasterID() + " spostato da " + a + "," + b + " a " + azione.getXYVector().getX() + "," + azione.getXYVector().getY() );
 
         }
@@ -334,6 +339,11 @@ public class Livello {
                 }
 
             }
+        } else if (azione.getTypeOfAction().equals(TypeOfAction.WAIT)) {
+            {
+                System.out.println("Boh qua non fa niente");
+            }
+
         }
 
         if(azione.getMasterID().equals(hero.name) && hero.getActionsPerTurn() == 0)
@@ -345,6 +355,8 @@ public class Livello {
     }
 
     private void Victory(){
+        hero.addVittoria();
+
         Button btnNewLvl = new Button("Prossimo Livello");
         btnNewLvl.setAlignment(Pos.CENTER);
         btnNewLvl.setStyle("-fx-font-size:24;");
@@ -366,7 +378,11 @@ public class Livello {
         victoryPane.setId("VictoryPane");
 
         btnNewLvl.setOnAction(event -> {
-
+            Livello l = new Livello(hero);
+            Stage x = (Stage) btnNewLvl.getScene().getWindow();
+            x.requestFocus();
+            x.setScene(l.getScenaLivello());
+            l.GameStart();
         });
 
         btnBackToMenu.setOnAction(e -> {

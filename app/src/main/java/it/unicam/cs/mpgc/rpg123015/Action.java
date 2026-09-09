@@ -15,12 +15,17 @@ public class Action {
 
     private int dmg;
     private Auxiliary attAnim;
-    public Action(XYVector targetPosition, TypeOfAction type , int dmg, Image attackAnimation, String actor) {
+    public Action(XYVector targetPosition, TypeOfAction type , int dmg, Auxiliary attackAnimation, String actor) {
         setMasterID(actor);
         setXYVector(targetPosition);
         setTypeOfAction(type);
         setDmg(dmg);
+        setAttAnim(attackAnimation);
+    }
 
+    public Action(TypeOfAction t, String actor) {
+        setTypeOfAction(t);
+        setMasterID(actor);
     }
 
     public String getMasterID() {return masterID;}

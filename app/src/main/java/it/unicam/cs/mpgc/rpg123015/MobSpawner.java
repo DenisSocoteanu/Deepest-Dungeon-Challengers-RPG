@@ -24,21 +24,21 @@ public class MobSpawner {
             {
                 case EASY:
                 {
-                    enemyList.add(new Enemy(enemyDiff, nE, new XYVector(lArena, hArena) ));
+                    enemyList.add(new Enemy(enemyDiff, nE));
                     nE++;
                     enemyValue-=4;
                     break;
                 }
                 case MEDIUM:
                 {
-                    enemyList.add(new Enemy(enemyDiff, nM, new XYVector(lArena, hArena) ));
+                    enemyList.add(new Enemy(enemyDiff, nM));
                     nM++;
                     enemyValue-=9;
                     break;
                 }
                 case HARD:
                 {
-                    enemyList.add(new Enemy(enemyDiff, nH, new XYVector(lArena, hArena) ));
+                    enemyList.add(new Enemy(enemyDiff, nH));
                     nH++;
                     enemyValue-=19;
                     break;

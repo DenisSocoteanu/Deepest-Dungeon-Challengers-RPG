@@ -22,24 +22,23 @@ public class Avatar extends Personaggio {
     public int expToLvlUp = 5;
     private int lvl = 1;
     public ProgressBar expBar;
+    private int vittorie;
 
-    Auxiliary target;
-    ScenaLivello scena;
-    AtomicReference<TypeOfAction> toa = new AtomicReference<>();
+    public Auxiliary target = new Auxiliary("targetSelection","/icons/TargetSelection.gif", AuxType.ALTRO);
+    public ScenaLivello scena;
 
-    public Avatar(String nome, ScenaLivello scena, XYVector dimArena)
+    /* Vecchio costruttore, possibilmente 100% rimuovibile
+    public Avatar(String nome, ScenaLivello scena)
     {
-        maxHp = 13;
+        maxHp = 10;
         hp = maxHp;
         setNome(nome);
         setIcon("/icons/AvatarSprite.png");
         setSTR(6);
         setDEX(2);
         setActionsPerTurn(getDEX());
-        target = new Auxiliary("targetSelection","/icons/TargetSelection.gif", AuxType.ALTRO);
         setAttackAnim1("Avatar_AttAni_1","/icons/QuickSlash.gif");
 
-        upperLimits = dimArena;
         this.scena = scena;
 
         hpbar = new ProgressBar();
@@ -48,15 +47,38 @@ public class Avatar extends Personaggio {
         expBar = new ProgressBar();
         expBar.setPrefHeight(24);
         expBar.setStyle("-fx-accent: green;");
+        vittorie = 0;
+
+    }*/
+
+    public Avatar(String nome)
+    {
+        setNome(nome);
+        setIcon("/icons/AvatarSprite.png");
+        setAttackAnim1("Avatar_AttAni_1","/icons/QuickSlash.gif");
+        setSTR(6);
+        setDEX(2);
+        setActionsPerTurn(getDEX());
+        maxHp = 10;
+        hp = maxHp;
+
+        hpbar = new ProgressBar();
         hpbar.setVisible(false);
 
+        expBar = new ProgressBar();
+        expBar.setPrefHeight(24);
+        expBar.setStyle("-fx-accent: green;");
+        vittorie = 0;
     }
 
-
-    @Override
-    public Action TakeAction()
+    public int getVittorie()
     {
-        return null;
+        return vittorie;
+    }
+    public void setVittorie(int v){ vittorie = v;}
+    public void addVittoria()
+    {
+        vittorie++;
     }
 
     public void SelectTarget()
@@ -70,19 +92,10 @@ public class Avatar extends Personaggio {
         scena.MoveEntity(i, id, x, y);
     }
 
-    @Override
-    public void Move(XYVector movement)
-    {
-        UpdatePosition(movement);
-        MoveTarget(getIcon(), getName(), position.getX(), position.getY());
-        System.out.println("POSIZIONE: " + position.getX() + ", " + position.getY());
-    }
-
     public void ShareStats() {
-        scena.getStats(maxHp,getSTR(),getDEX(), lvl, exp, expToLvlUp, expBar);
+        scena.getStats(hp,maxHp,getSTR(),getDEX(), lvl, exp, expToLvlUp, expBar);
         updateExpBar();
     }
-
 
     public void RegHit(int dmg)
     {

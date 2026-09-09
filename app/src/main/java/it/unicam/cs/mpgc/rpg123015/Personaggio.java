@@ -55,25 +55,24 @@ public abstract class Personaggio implements Actions {
     public int getX() { return position.getX(); }
     public int getY() { return position.getY(); }
 
-    public void setX(int x) { position.setX(x); }
-    public void setY(int y) { position.setY(y); }
+    public void UpdatePosition(XYVector movement) {
+        position.setX(movement.getX());
+        position.setY(movement.getY());
+    }
 
     public void Spawn(int x, int y) {
         position = new XYVector(x, y);
     }
 
-    public void Move(XYVector movement) {
-        System.out.println("Placeholder Movement");
+    public void Move(XYVector movement)
+    {
+        UpdatePosition(movement);
+        System.out.println("POSIZIONE: " + position.getX() + ", " + position.getY());
     }
 
     public Action TakeAction() {
         System.out.println(name + " ha agito!");
         return null;
-    }
-
-    public void UpdatePosition(XYVector movement) {
-        position.setX(movement.getX());
-        position.setY(movement.getY());
     }
 
     public Image getIcon() {

@@ -258,8 +258,9 @@ public class ScenaLivello {
         mp.play();
     }
 
-    public void getStats(int maxHp, int STR, int DEX, int lvl, int exp, int maxexp, ProgressBar expBar) {
+    public void getStats(int hp, int maxHp, int STR, int DEX, int lvl, int exp, int maxexp, ProgressBar expBar) {
 
+        System.out.println(hp + "/" + maxHp);
         IniGrid(stats, 2, (int) Math.ceil((double) maxHp /2)+1, 32);//Viene popolata l'area di destra con le stat del giocatore
 
         TextFlow ps = new TextFlow(), pd = new TextFlow();
@@ -279,11 +280,19 @@ public class ScenaLivello {
 
         for (int i = 0; i < maxHp; i++)
         {
-            Pane p = new Pane();
-            ImageView iv = new ImageView(new Image("/icons/Heart.png"));
+            Pane p = new Pane();ImageView iv;
+            if(i<hp)
+            {
+                iv = new ImageView(new Image("/icons/Heart.png"));
+                p.setId("hp"+i);
+
+            }else{
+                iv = new ImageView(new Image("/icons/BrokenHeart.png"));
+                p.setId("bh"+i);
+
+            }
             iv.setId("hi"+i);
             p.getChildren().add(iv);
-            p.setId("hp"+i);
             System.out.println((i%2)+ ","+ (int) Math.floor((double) i /2));
             stats.add(p, (i%2), (int) Math.floor((double) i /2)+1 );
         }

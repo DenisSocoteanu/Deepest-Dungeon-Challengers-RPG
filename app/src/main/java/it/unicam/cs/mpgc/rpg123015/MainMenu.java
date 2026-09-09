@@ -46,7 +46,8 @@ public class MainMenu{
             else{
                 if(td.getEditor().getText().isEmpty())
                     td.getEditor().setText("Guglielmo");
-                Livello livello = new Livello(td.getEditor().getText());
+                Livello livello = new Livello(new Avatar(td.getEditor().getText()));
+                //Livello livello = new Livello(td.getEditor().getText());
                 Stage x = (Stage) btnNewGame.getScene().getWindow();
                 x.requestFocus();
                 x.setScene(livello.getScenaLivello());

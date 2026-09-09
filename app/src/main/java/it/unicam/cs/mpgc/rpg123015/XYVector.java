@@ -23,8 +23,8 @@ public class XYVector {
         this.y = y;
     }
 
-    public void PrintXY()
+    public String PrintXY()
     {
-        System.out.println(x+","+y);
+        return (x+","+y);
     }
 }
