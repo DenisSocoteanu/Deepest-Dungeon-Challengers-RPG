@@ -16,13 +16,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
+import javafx.scene.paint.Color;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+
 
 public class ScenaLivello {
 
@@ -35,12 +35,12 @@ public class ScenaLivello {
 
 
     //Il costruttuore genera immediatamente un'arena in base al livello di difficoltà scelto casualmente.
-    public ScenaLivello(int id, int lArena, int hArena) {
-        genScenaLayout(id, lArena, hArena);
+    public ScenaLivello(String nEroe, int nVittorie, int lArena, int hArena) {
+        genScenaLayout(nEroe, nVittorie, lArena, hArena);
     }
 
     //Genera ed organizza gli elementi grafici della scena, come il numero delle colonne e righe, le celle ed il loro aspetto.
-    private void genScenaLayout(int id, int lArena, int hArena) {
+    private void genScenaLayout(String nEroe, int nVittorie, int lArena, int hArena) {
         int leftArea =200, bottomArea = 128;
         int lScena, hScena;
         lScena = leftArea+(lArena*64)+64;
@@ -52,7 +52,7 @@ public class ScenaLivello {
         scenaLivello.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/fontstyle.css")).toExternalForm());
 
         //------------ Top Area -----------------------
-        Text titoloLivello = new Text("Livello " + id);
+        Text titoloLivello = new Text("Discesa di " + nEroe + " - Piano B-" + nVittorie);
         pannello.setTop(titoloLivello);
 
         //------------ Right Area -----------
@@ -63,8 +63,9 @@ public class ScenaLivello {
 
         //----------- Left Area ------------------------
         TextArea actionLog = new TextArea("Action Log");
+        actionLog.setFont(Font.font("Power Red and Green", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 16));
+        actionLog.appendText("\nSei sceso più a fondo nel dungeon...");
         actionLog.setId("actionLogPane");
-        actionLog.setStyle("-fx-font-family:'Power Red and Green';");
         actionLog.setFocusTraversable(false);
         actionLog.setEditable(false);
         actionLog.setWrapText(true);
@@ -269,8 +270,13 @@ public class ScenaLivello {
         ps.setTextAlignment(TextAlignment.CENTER);
         pd.setTextAlignment(TextAlignment.CENTER);
 
-        ps.getChildren().add(new Text(""+STR));
-        pd.getChildren().add(new Text(""+DEX));
+        Text ts = new Text(""+STR), td = new Text(""+DEX);
+        ts.setFont(Font.font("Power Red and Green", FontWeight.BOLD, 40));
+        td.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 40));
+        ts.setFill(Color.WHITE); td.setFill(Color.WHITE);
+        ts.setStrokeWidth(2); td.setStrokeWidth(2);
+        ts.setStroke(Color.BLACK); td.setStroke(Color.BLACK);
+        ps.getChildren().add(ts); pd.getChildren().add(td);
 
         stats.add(ps, 0, 0);
         stats.add(pd, 1, 0);
@@ -372,12 +378,21 @@ public class ScenaLivello {
 
     public void updateSTR(int str)
     {
-        ((TextFlow)stats.getChildren().get(0)).getChildren().set(0, new Text(""+str));
+        Text t = (Text) ((TextFlow)stats.getChildren().get(0)).getChildren().getFirst();
+        t.setText(""+str);
+        ((TextFlow)stats.getChildren().get(1)).getChildren().set(0, t);
     }
 
     public void updateDEX(int dex)
     {
-        ((TextFlow)stats.getChildren().get(1)).getChildren().set(0, new Text(""+dex));
+        Text t = (Text) ((TextFlow)stats.getChildren().get(1)).getChildren().getFirst();
+        t.setText(""+dex);
+        ((TextFlow)stats.getChildren().get(1)).getChildren().set(0, t);
+    }
+
+    public void logAction(String action)
+    {
+        ((TextArea)pannello.getLeft()).appendText("\n"+action);
     }
 
     public StackPane getStackPane() {

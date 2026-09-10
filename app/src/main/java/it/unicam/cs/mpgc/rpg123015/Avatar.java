@@ -3,9 +3,7 @@ package it.unicam.cs.mpgc.rpg123015;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -87,11 +85,6 @@ public class Avatar extends Personaggio {
         scena.SpawnEntity(target.getImage(), target.name, getX(), getY() );
     }
 
-    //Sposta l'icona nella scena
-    private void MoveTarget(Image i, String id, int x, int y) {
-        scena.MoveEntity(i, id, x, y);
-    }
-
     public void ShareStats() {
         scena.getStats(hp,maxHp,getSTR(),getDEX(), lvl, exp, expToLvlUp, expBar);
         updateExpBar();
@@ -101,7 +94,6 @@ public class Avatar extends Personaggio {
     {
         super.RegHit(dmg);
         scena.updateHP(dmg);
-
     }
 
     public void gainExp(int xp)
@@ -132,6 +124,9 @@ public class Avatar extends Personaggio {
 
     private void lvlUpPopUp()
     {
+        scena.logAction("Sei salito di livello!");
+
+        //Dialog s = new Dialog();
         StackPane s = scena.getStackPane();
 
         GridPane cardsGrid = new GridPane();
@@ -196,6 +191,8 @@ public class Avatar extends Personaggio {
         cardsGrid.add(mhpbox, 3, 1);
         cardsGrid.add(healbox, 4, 1);
 
+        /*s.getDialogPane().setContent(cardsGrid);
+        s.showAndWait();*/
         s.getChildren().add(cardsGrid);
     }
 
@@ -206,23 +203,27 @@ public class Avatar extends Personaggio {
         }
         System.out.println("HP: "+this.hp);
         scena.updateHP(-hp);
+        scena.logAction("Ti senti invigorito, recuperi " + hp + " cuori!");
     }
 
     public void AumentaMaxHP(int hp){
         this.maxHp+=hp;
         System.out.println("hp: "+ this.hp + "/" +this.maxHp);
         scena.updateMaxHP(maxHp);
+        scena.logAction("La tua costituzione aumenta di un po'!");
     }
 
     public void AumentaSTR(int s){
         setSTR(getSTR()+s);
         System.out.println("STR: "+this.getSTR());
         scena.updateSTR(this.getSTR());
+        scena.logAction("La tua forza è aumentata!");
     }
 
     public void AumentaDEX(int s){
         setDEX(getDEX()+s);
         System.out.println("DEX: "+this.getDEX());
         scena.updateDEX(this.getDEX());
+        scena.logAction("Sei diventato più agile!");
     }
 }

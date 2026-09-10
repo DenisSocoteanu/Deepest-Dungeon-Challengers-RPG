@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Livello {
 
-    private int id;
+    private String nomeLvl;
     private LevelStatus status;
     private LevelDifficulty diff;
     private ScenaLivello scena;
@@ -28,18 +28,20 @@ public class Livello {
 
     public Livello(Avatar h) {
 
-        id = this.hashCode();
+        nomeLvl = h.name + h.getVittorie();
 
         diff = genDiff(LevelDifficulty.class);
         genArena(diff);
 
         arena = new Personaggio[lArena][hArena];
-        scena = new ScenaLivello(id, lArena, hArena);
+        scena = new ScenaLivello(h.name, h.getVittorie(), lArena, hArena);
 
         scena.genArena(lArena, hArena);
         hero = h;
         hero.scena = scena;
         hero.ShareStats();
+
+        scena.logAction("Vedi" + enemies.size() + " nemici!");
         initiativeOrder.add(hero);
         initiativeOrder.addAll(enemies);
 
@@ -130,6 +132,7 @@ public class Livello {
 
     public void GameStart() {
         System.out.println("GAME START!");
+        hero.setActionsPerTurn(hero.getDEX());
         initController();
     }
 
@@ -263,7 +266,7 @@ public class Livello {
             }
         }
         hero.setActionsPerTurn(hero.getDEX());
-        System.out.println("Qua hanno finito i nemici, ora tornerebbero i controlli al player. APT:" + hero.getActionsPerTurn());
+        scena.logAction("I nemici incombono!");
     }
 
     //idealmente, questa funzione viene chiamata una (o più) volta per turno, ogni turno, ogni volta che un elemento fa qualcosa in gameStart.
