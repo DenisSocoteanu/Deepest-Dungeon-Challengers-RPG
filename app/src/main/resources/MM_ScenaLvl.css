@@ -5,7 +5,7 @@
 
 .text {
     -fx-font-family: "Power Red and Green";
-    -fx-font-size: 16;
+    -fx-font-size: 24;
 }
 
 #pannelloMM{
@@ -23,6 +23,7 @@
     -fx-background-color: rgba(14,14,14,0.7);
 }
 
-.button {
-    -fx-font-family: "Power Red and Green";
+
+#ActionLogPane .text {
+    -fx-line-spacing: 4px;
 }

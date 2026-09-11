@@ -5,6 +5,7 @@ package it.unicam.cs.mpgc.rpg123015;
 
 
 import javafx.application.Application;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.*;
 import javafx.scene.layout.*;
@@ -29,11 +30,13 @@ public class App extends Application {
         MainMenu mm = new MainMenu();
         synchronized (scena = mm.mmScene)
         {
-            scena.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/fontstyle.css")).toExternalForm());
+            scena.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/MM_ScenaLvl.css")).toExternalForm());
             primaryStage.setScene(scena);
             primaryStage.setResizable(false);
             primaryStage.getIcons().add(new Image("/icons/AvatarSprite.png"));
-            primaryStage.setTitle("Dungeon Hoards");
+            primaryStage.setTitle("Deepest Dungeon - Challengers");
+            primaryStage.setY(Screen.getPrimary().getBounds().getHeight()/16);
+            primaryStage.setX((Screen.getPrimary().getBounds().getWidth()-800)/2);
             primaryStage.show();
         }
 

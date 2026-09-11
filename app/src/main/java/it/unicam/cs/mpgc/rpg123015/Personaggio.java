@@ -17,8 +17,6 @@ public abstract class Personaggio implements Actions {
 
     //Coordinate
     public XYVector position;
-    //Ogni personaggio esiste nei confini dell'arena. Pertanto, ogni personaggio è cosciente delle dimensioni dell'arena. La dimensione massima è chiamata upper-limit
-    public XYVector upperLimits;
 
     public Personaggio() {}
 

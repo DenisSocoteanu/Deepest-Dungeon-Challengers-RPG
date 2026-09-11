@@ -16,39 +16,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Avatar extends Personaggio {
 
-    public int exp = 0;
-    public int expToLvlUp = 5;
-    private int lvl = 1;
+    private boolean isAlive = true;
+    public int exp;
+    public int expToLvlUp;
+    public int lvl;
     public ProgressBar expBar;
     private int vittorie;
 
     public Auxiliary target = new Auxiliary("targetSelection","/icons/TargetSelection.gif", AuxType.ALTRO);
     public ScenaLivello scena;
 
-    /* Vecchio costruttore, possibilmente 100% rimuovibile
-    public Avatar(String nome, ScenaLivello scena)
-    {
-        maxHp = 10;
-        hp = maxHp;
-        setNome(nome);
-        setIcon("/icons/AvatarSprite.png");
-        setSTR(6);
-        setDEX(2);
-        setActionsPerTurn(getDEX());
-        setAttackAnim1("Avatar_AttAni_1","/icons/QuickSlash.gif");
-
-        this.scena = scena;
-
-        hpbar = new ProgressBar();
-        hpbar.setVisible(false);
-
-        expBar = new ProgressBar();
-        expBar.setPrefHeight(24);
-        expBar.setStyle("-fx-accent: green;");
-        vittorie = 0;
-
-    }*/
-
+    //Questo costruttore viene chiamato quando si crea un nuovo personaggio, AKA un nuovo file di salvataggio
     public Avatar(String nome)
     {
         setNome(nome);
@@ -63,10 +41,48 @@ public class Avatar extends Personaggio {
         hpbar = new ProgressBar();
         hpbar.setVisible(false);
 
+        lvl = 1;
+        exp = 0;
+        expToLvlUp = 5;
+
         expBar = new ProgressBar();
         expBar.setPrefHeight(24);
         expBar.setStyle("-fx-accent: green;");
         vittorie = 0;
+    }
+
+    public Avatar(String nome, String icon, String aa, int str, int dex, int maxhp, int hp, int l, int xp, int exptlu, int v, boolean isA)
+    {
+        name = nome;
+        setIcon(icon);
+        setAttackAnim1("Avatar_AttAni_1",aa);
+        setSTR(str);
+        setDEX(dex);
+        setActionsPerTurn(getDEX());
+        maxHp = maxhp;
+        this.hp = hp;
+
+        hpbar = new ProgressBar();
+        hpbar.setVisible(false);
+
+        lvl = l;
+        exp = xp;
+        expToLvlUp = exptlu;
+
+        expBar = new ProgressBar();
+        expBar.setPrefHeight(24);
+        expBar.setStyle("-fx-accent: green;");
+        vittorie = v;
+
+        isAlive = isA;
+    }
+
+    public boolean getIsAlive() {
+        return isAlive;
+    }
+    public void KILL() {
+        isAlive = false;
+        setIcon("/icons/AvatarDead.png");
     }
 
     public int getVittorie()
@@ -86,6 +102,7 @@ public class Avatar extends Personaggio {
     }
 
     public void ShareStats() {
+        System.out.println(lvl + ", " + exp + "/" + expToLvlUp);
         scena.getStats(hp,maxHp,getSTR(),getDEX(), lvl, exp, expToLvlUp, expBar);
         updateExpBar();
     }
@@ -119,6 +136,7 @@ public class Avatar extends Personaggio {
         lvl++;
         exp = exp - expToLvlUp;
         expToLvlUp = expToLvlUp + (int) Math.sqrt(expToLvlUp + lvl);
+
         lvlUpPopUp();
     }
 
@@ -126,7 +144,6 @@ public class Avatar extends Personaggio {
     {
         scena.logAction("Sei salito di livello!");
 
-        //Dialog s = new Dialog();
         StackPane s = scena.getStackPane();
 
         GridPane cardsGrid = new GridPane();
@@ -168,19 +185,19 @@ public class Avatar extends Personaggio {
 
         STRb.setOnMouseClicked(event -> {
             AumentaSTR(1);
-            scena.getStackPane().getChildren().removeLast();
+            closeTab(cardsGrid);
         });
         DEXb.setOnMouseClicked(event -> {
             AumentaDEX(1);
-            scena.getStackPane().getChildren().removeLast();
+            closeTab(cardsGrid);
         });
         mhpbox.setOnMouseClicked(event -> {
             AumentaMaxHP(1);
-            scena.getStackPane().getChildren().removeLast();
+            closeTab(cardsGrid);
         });
         healbox.setOnMouseClicked(event -> {
             RegainHP(4);
-            scena.getStackPane().getChildren().removeLast();
+            closeTab(cardsGrid);
         });
 
         Text congarats = new Text("Sei salito di livello!");
@@ -191,9 +208,16 @@ public class Avatar extends Personaggio {
         cardsGrid.add(mhpbox, 3, 1);
         cardsGrid.add(healbox, 4, 1);
 
-        /*s.getDialogPane().setContent(cardsGrid);
-        s.showAndWait();*/
         s.getChildren().add(cardsGrid);
+    }
+
+    private void closeTab(GridPane cardsGrid)
+    {
+        StackPane s = scena.getStackPane();
+        System.out.println(s.getChildren().getLast().getClass().toString() + " | " + s.getChildren().getLast().isVisible());
+        if (!s.getChildren().getLast().isVisible())
+            s.getChildren().getLast().setVisible(true);
+        scena.getStackPane().getChildren().remove(cardsGrid);
     }
 
     public void RegainHP(int hp){

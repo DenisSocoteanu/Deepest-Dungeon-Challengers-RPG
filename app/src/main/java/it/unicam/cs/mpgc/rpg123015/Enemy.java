@@ -51,7 +51,7 @@ public class Enemy extends Personaggio{
                 break;
         }
 
-        setAttackAnim1("EASY_AttAni_1","/icons/QuickSlash.gif");
+        setAttackAnim1("EASY_AttAni_1","/icons/QuickClaw.gif");
         setActionsPerTurn(getDEX());
         hpbar = new ProgressBar();
         hpbar.setPrefSize(64,16);

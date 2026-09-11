@@ -49,7 +49,7 @@ public class ScenaLivello {
         rootStackPane.getChildren().add(pannello);
         scenaLivello = new Scene(rootStackPane,lScena,hScena);
 
-        scenaLivello.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/fontstyle.css")).toExternalForm());
+        scenaLivello.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/MM_ScenaLvl.css")).toExternalForm());
 
         //------------ Top Area -----------------------
         Text titoloLivello = new Text("Discesa di " + nEroe + " - Piano B-" + nVittorie);
@@ -60,18 +60,6 @@ public class ScenaLivello {
         stats.setId("statsPane");
         pannello.setRight(stats);
 
-
-        //----------- Left Area ------------------------
-        TextArea actionLog = new TextArea("Action Log");
-        actionLog.setFont(Font.font("Power Red and Green", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 16));
-        actionLog.appendText("\nSei sceso più a fondo nel dungeon...");
-        actionLog.setId("actionLogPane");
-        actionLog.setFocusTraversable(false);
-        actionLog.setEditable(false);
-        actionLog.setWrapText(true);
-        actionLog.setPrefWidth(leftArea);
-        pannello.setLeft(actionLog);
-
         //----------- Center Area -------------------------
         pannelloArena = new GridPane(0,0);
         pannelloArena.setFocusTraversable(false);
@@ -79,6 +67,19 @@ public class ScenaLivello {
         GridPane.setHalignment(pannelloArena, HPos.CENTER);
         BorderPane.setAlignment(pannelloArena, Pos.CENTER);
         pannello.setCenter(pannelloArena);
+
+        //----------- Left Area ------------------------
+        TextArea actionLog = new TextArea("Action Log");
+        actionLog.setFont(Font.font("Power Red and Green", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 17));
+        actionLog.appendText("\nSei sceso più a fondo nel dungeon...");
+        actionLog.setId("ActionLogPane");
+        actionLog.setFocusTraversable(false);
+        actionLog.setEditable(false);
+        actionLog.setWrapText(true);
+        actionLog.setMinHeight(hArena*64);
+        actionLog.setPrefHeight(hArena*64);
+        actionLog.setPrefWidth(leftArea);
+        pannello.setLeft(actionLog);
 
         //----------- Bottom Area ------------------------
         VBox bottomPane = new VBox();
