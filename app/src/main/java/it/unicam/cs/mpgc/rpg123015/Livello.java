@@ -9,12 +9,20 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,27 +33,30 @@ public class Livello {
 
     private String nomeLvl;
     private LevelStatus status;
-    private LevelDifficulty diff;
-    private ScenaLivello scena;
-    private Avatar hero;
+    private final ScenaLivello scena;
+    private final Avatar hero;
 
     private int lArena,hArena;
     private final List<Enemy> enemies = new ArrayList<>();
     private List<Personaggio> initiativeOrder = new ArrayList<>();
     private final Personaggio[][] arena;
 
-    public Livello(Avatar h) {
+    public Livello(Avatar h, @Nullable MediaPlayer mp) {
 
+        hero = h;
         nomeLvl = "l-" + h.name + h.getVittorie();
 
-        diff = genDiff(LevelDifficulty.class);
+        LevelDifficulty diff = genDiff(LevelDifficulty.class);
         genArena(diff);
 
         arena = new Personaggio[lArena][hArena];
-        scena = new ScenaLivello(h.name, h.getVittorie(), lArena, hArena);
+
+        if (mp == null)
+            scena = new ScenaLivello(h.name, h.getVittorie(), lArena, hArena, null);
+        else
+            scena = new ScenaLivello(h.name, h.getVittorie(), lArena, hArena, mp);
 
         scena.genArena(lArena, hArena);
-        hero = h;
         hero.scena = scena;
         hero.ShareStats();
 
@@ -70,7 +81,6 @@ public class Livello {
     }
 
     private void genArena(LevelDifficulty diff) {
-        System.out.println("Generating " + diff + " Arena..." );
 
         Random RANDOM = new Random();
 
@@ -79,21 +89,21 @@ public class Livello {
             case EASY:
                 lArena = RANDOM.nextInt(5,7);
                 hArena = RANDOM.nextInt(5,7);
-                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(17));
+                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
 
                 break;
             case MEDIUM:
                 //Generati il numero di nemici ed i nemici
                 lArena = RANDOM.nextInt(6,9);
                 hArena = RANDOM.nextInt(6,9);
-                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(37));
+                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
 
                 break;
             case HARD:
                 //Generati il numero di nemici ed i nemici
                 lArena = RANDOM.nextInt(7,11);
                 hArena = RANDOM.nextInt(7,11);
-                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(57));
+                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
 
                 break;
             case BOSS:
@@ -101,14 +111,11 @@ public class Livello {
                 lArena = RANDOM.nextInt(8,13);
                 hArena = RANDOM.nextInt(8,13);
 
-                enemies.add(new Enemy(diff, 0));
-                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(35));
+                enemies.add(new Enemy(diff, hero.lvl, 0));
+                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
                 break;
         }
 
-        for (Enemy enemy : enemies) {
-            System.out.println(enemy.getName() + " | HP: " + enemy.hp);
-        }
 
     }
 
@@ -134,13 +141,13 @@ public class Livello {
 
     //Avendo la posizione nell'arena, ogni personaggio viene posizionato
     private void SummonEntity(Personaggio e) {
-        System.out.println("Spawnato " + e.getName() + " in posizione " + e.getX() + ", " + e.getY());
+        //System.out.println("Spawnato " + e.getName() + " in posizione " + e.getX() + ", " + e.getY());
         arena[e.getX()][e.getY()] = e;
         scena.SpawnEntity(e.getIcon(), e.getName(), e.getX(), e.getY());
     }
 
     public void GameStart() {
-        System.out.println("GAME START!");
+        //System.out.println("GAME START!");
         hero.setActionsPerTurn(hero.getDEX());
         initController();
     }
@@ -152,7 +159,12 @@ public class Livello {
 
             switch (event.getCode()) {
                 case ESCAPE:
-                    PauseMenu();
+                    if (!(scena.getStackPane().getChildren().getLast() instanceof VBox))
+                        PauseMenu();
+                    else
+                        scena.getStackPane().getChildren().removeLast();
+
+                    break;
             }
 
             XYVector targetPos;
@@ -210,7 +222,6 @@ public class Livello {
                             scena.logAction(hero.name + " spostato in " + targetPos.PrintXY());
                             break;
                         case Z:
-                            System.out.println("NOW FOCUSING TARGET");
                             hero.SelectTarget();
                             focusTarget.set(true);
                             break;
@@ -225,7 +236,6 @@ public class Livello {
                             if (hero.target.position.getY() == 0)
                             {scena.PlayOOBsound();break;}
 
-                            System.out.println("TARGET UP");
                             scena.MoveAux(hero.target, hero.target.getX(), hero.target.getY()-1 );
                             hero.target.UpdatePosition(new XYVector(hero.target.getX(), hero.target.getY()-1));
                             break;
@@ -234,7 +244,6 @@ public class Livello {
                             if (hero.target.position.getX() == 0)
                             {scena.PlayOOBsound();break;}
 
-                            System.out.println("TARGET LEFT");
                             scena.MoveAux(hero.target, hero.target.getX()-1, hero.target.getY() );
                             hero.target.UpdatePosition(new XYVector(hero.target.getX()-1, hero.target.getY()));
                             break;
@@ -243,7 +252,6 @@ public class Livello {
                             if (hero.target.position.getY() == hArena-1)
                             {scena.PlayOOBsound();break;}
 
-                            System.out.println("TARGET DOWN");
                             scena.MoveAux(hero.target, hero.target.getX(), hero.target.getY()+1 );
                             hero.target.UpdatePosition(new XYVector(hero.target.getX(), hero.target.getY()+1));
                             break;
@@ -252,19 +260,22 @@ public class Livello {
                             if (hero.target.position.getX() == lArena-1)
                             {scena.PlayOOBsound();break;}
 
-                            System.out.println("TARGET RIGHT");
                             scena.MoveAux(hero.target, hero.target.getX()+1, hero.target.getY() );
                             hero.target.UpdatePosition(new XYVector(hero.target.getX()+1, hero.target.getY()));
                             break;
                         case ENTER:
                         case Z:
-                            System.out.println("NOW FOCUSING PLAYER");
-                            Action azioneEroe = new Action(hero.target.position, TypeOfAction.ATTACK, hero.getSTR(), hero.getAttackAnim1(), hero.name);
+                            Action azioneEroe = new Action(hero.target.position, TypeOfAction.ATTACK, hero.getSTR(), hero.attackAnimation2, hero.getAttackSfx(), hero.name);
                             scena.RemoveAux(hero.target);
                             hero.decAPT();
                             ExecuteTurn(azioneEroe);
                             focusTarget.set(false);
                             break;
+                        case X:
+                            scena.RemoveAux(hero.target);
+                            focusTarget.set(false);
+                            break;
+
                     }
                 }
             }
@@ -272,7 +283,7 @@ public class Livello {
         });
     }
 
-    synchronized private void DoEnemiesTurn()
+    synchronized private void playEnemiesTurn()
     {
         for (Enemy e : enemies)
         {
@@ -280,7 +291,6 @@ public class Livello {
             while(e.getActionsPerTurn()>0)
             {
                 Action a = e.TakeAction(arena);
-                System.out.println(a.getTypeOfAction());
                 ExecuteTurn(a);
                 e.decAPT();
             }
@@ -301,6 +311,7 @@ public class Livello {
                 {
                     azione.setDmg(p.getSTR());
                     azione.setAttAnim(p.getAttackAnim1());
+                    azione.setAttSfx(p.getAttackSfx());
                 }
             }
         }
@@ -324,7 +335,7 @@ public class Livello {
             arena[a][b] = null;
             actor.Move(azione.getXYVector());
             scena.MoveEntity(actor.getIcon(),actor.name, azione.getXYVector().getX(), azione.getXYVector().getY());
-            System.out.println(azione.getMasterID() + " spostato da " + a + "," + b + " a " + azione.getXYVector().getX() + "," + azione.getXYVector().getY() );
+            //System.out.println(azione.getMasterID() + " spostato da " + a + "," + b + " a " + azione.getXYVector().getX() + "," + azione.getXYVector().getY() );
 
         }
         else if (azione.getTypeOfAction().equals(TypeOfAction.ATTACK))
@@ -334,7 +345,7 @@ public class Livello {
             {
                 scena.logAction("Colpito " + actor.getName() + "! " + azione.getDMG() + " danni");
                 scena.SpawnAux(azione.getAttackAnimation(), actor.getX(),  actor.getY());
-                System.out.println(azione.getDMG());
+                scena.playSound(azione.getAttSfx());
                 actor.RegHit(azione.getDMG());
 
                 //scena.AttachObj(actor.name, actor.hpbar);
@@ -355,9 +366,7 @@ public class Livello {
                     }
                     else
                     {
-
                         GameOver();
-
                     }
 
                 }
@@ -371,15 +380,28 @@ public class Livello {
         }
 
         if(azione.getMasterID().equals(hero.name) && hero.getActionsPerTurn() == 0)
-            DoEnemiesTurn();
+            playEnemiesTurn();
     }
 
     private int PauseMenu()
     {
         StackPane s = scena.getStackPane();
-        if (s.getChildren().getLast() instanceof VBox) {
+        if (s.getChildren().getLast() instanceof VBox)
             return -1;
-        }
+
+        //------ Gradient Block ------
+        Stop[] stop = {new Stop(0, Color.color(0.372,0.533,0.518)),
+                new Stop(1, Color.color(0.184,0.314,0.372))};
+
+        LinearGradient linear_gradient = new LinearGradient(0, 0,
+                0, 1, true, CycleMethod.NO_CYCLE, stop);
+        BackgroundFill backgroundFill = new BackgroundFill(linear_gradient, CornerRadii.EMPTY, Insets.EMPTY);
+        Background bg = new Background(backgroundFill);
+        //------ Gradient Block - Border Block ------
+        BorderStrokeStyle bss = new BorderStrokeStyle(StrokeType.OUTSIDE, StrokeLineJoin.ROUND, StrokeLineCap.ROUND, 0,0, null);
+        BorderStroke bs = new BorderStroke(Color.ALICEBLUE, bss, CornerRadii.EMPTY, new BorderWidths(3));
+        Border b = new Border(bs);
+        //------ Border Block ------
 
         VBox pauseM = new VBox(24);
         pauseM.setMinHeight(s.getHeight()); pauseM.setPrefHeight(s.getHeight());
@@ -387,26 +409,33 @@ public class Livello {
         pauseM.setStyle("-fx-background-color: rgba(14,14,14,0.7);");
 
         ImageView titleCard = new ImageView(new Image("/icons/TitleCard.png"));
-        Text subTitle = new Text("Discesa di "+ hero.name + " | B-"+hero.getVittorie());
+        Text subTitle = new Text("\"Le scale.. non sono lontane\"");
         subTitle.setFont(Font.font("Power Red and Green", 28));
         subTitle.setFill(Color.WHITE);
         pauseM.setAlignment(Pos.CENTER);
 
         Button continua = new Button("Continua");
         continua.setFont(Font.font("Power Red and Green", 24));
+        continua.setTextFill(Color.ALICEBLUE);
+        continua.setBackground(bg);
+        continua.setBorder(b);
         continua.setPrefHeight(32);
         continua.setPrefWidth(s.getWidth()/3);
         continua.setAlignment(Pos.CENTER);
         continua.setOnAction(event -> {
-            s.getChildren().removeLast();
+            s.getChildren().remove(pauseM);
         });
 
         Button backtoMM = new Button("Torna al Menu");
         backtoMM.setFont(Font.font("Power Red and Green", 24));
+        backtoMM.setTextFill(Color.ALICEBLUE);
+        backtoMM.setBackground(bg);
+        backtoMM.setBorder(b);
         backtoMM.setPrefHeight(32);
         backtoMM.setPrefWidth(s.getWidth()/3);
         backtoMM.setAlignment(Pos.CENTER);
         backtoMM.setOnAction(e -> {
+            scena.fadeOutMusic();
             scena.ReturnToMM();
         });
 
@@ -422,6 +451,21 @@ public class Livello {
         hero.KILL();
         SaveLoadParser slp = new SaveLoadParser();
         slp.writeSave(hero);StackPane s = scena.getStackPane();
+        //------ Gradient Block ------
+        Stop[] stop = {new Stop(0, Color.color(0.372,0.533,0.518)),
+                new Stop(1, Color.color(0.184,0.314,0.372))};
+
+        LinearGradient linear_gradient = new LinearGradient(0, 0,
+                0, 1, true, CycleMethod.NO_CYCLE, stop);
+        BackgroundFill backgroundFill = new BackgroundFill(linear_gradient, CornerRadii.EMPTY, Insets.EMPTY);
+        Background bg = new Background(backgroundFill);
+        //------ Gradient Block - Border Block ------
+        BorderStrokeStyle bss = new BorderStrokeStyle(StrokeType.OUTSIDE, StrokeLineJoin.ROUND, StrokeLineCap.ROUND, 0,0, null);
+        BorderStroke bs = new BorderStroke(Color.ALICEBLUE, bss, CornerRadii.EMPTY, new BorderWidths(3));
+        Border b = new Border(bs);
+        //------ Border Block ------
+
+        scena.fadeOutMusic();
 
         VBox defeatMenu = new VBox(24);
         defeatMenu.setMinHeight(s.getHeight()); defeatMenu.setPrefHeight(s.getHeight());
@@ -431,11 +475,14 @@ public class Livello {
         ImageView titleCard = new ImageView(new Image("/icons/TitleCard.png"));
         Text subTitle = new Text("Discesa di "+ hero.name + " | B-"+hero.getVittorie());
         subTitle.setFont(Font.font("Power Red and Green", 28));
-        subTitle.setFill(Color.WHITE);
+        subTitle.setFill(Color.ALICEBLUE);
         defeatMenu.setAlignment(Pos.CENTER);
 
         Button backtoMM = new Button("Torna al Menu");
+        backtoMM.setBorder(b);
         backtoMM.setFont(Font.font("Power Red and Green", 24));
+        backtoMM.setTextFill(Color.ALICEBLUE);
+        backtoMM.setBackground(bg);
         backtoMM.setPrefHeight(32);
         backtoMM.setPrefWidth(s.getWidth()/3);
         backtoMM.setAlignment(Pos.CENTER);
@@ -445,6 +492,9 @@ public class Livello {
 
         Button btnQuit = new Button("Esci dal gioco");
         btnQuit.setFont(Font.font("Power Red and Green", 24));
+        btnQuit.setTextFill(Color.ALICEBLUE);
+        btnQuit.setBackground(bg);
+        btnQuit.setBorder(b);
         btnQuit.setPrefHeight(32);
         btnQuit.setPrefWidth(s.getWidth()/3);
         btnQuit.setAlignment(Pos.CENTER);
@@ -460,39 +510,63 @@ public class Livello {
         StackPane s = scena.getStackPane();
 
         hero.addVittoria();
+        SaveLoadParser slp = new SaveLoadParser();
+        slp.writeSave(hero);
+        //------ Gradient Block ------
+        Stop[] stop = {new Stop(0, Color.color(0.372,0.533,0.518)),
+                new Stop(1, Color.color(0.184,0.314,0.372))};
+
+        LinearGradient linear_gradient = new LinearGradient(0, 0,
+                0, 1, true, CycleMethod.NO_CYCLE, stop);
+        BackgroundFill backgroundFill = new BackgroundFill(linear_gradient, CornerRadii.EMPTY, Insets.EMPTY);
+        Background bg = new Background(backgroundFill);
+        //------ Gradient Block - Border Block ------
+        BorderStrokeStyle bss = new BorderStrokeStyle(StrokeType.OUTSIDE, StrokeLineJoin.ROUND, StrokeLineCap.ROUND, 0,0, null);
+        BorderStroke bs = new BorderStroke(Color.ALICEBLUE, bss, CornerRadii.EMPTY, new BorderWidths(3));
+        Border b = new Border(bs);
+        //------ Border Block ------
 
         Text celebration = new Text("Vittoria!");
-        celebration.setFill(Color.WHITE);
-        celebration.setFont(Font.font("Power Red and Green", 60));
+        celebration.setFill(Color.ALICEBLUE);
+        celebration.setFont(Font.font("Power Red and Green", 54));
         celebration.setTextAlignment(TextAlignment.CENTER);
         celebration.setWrappingWidth(s.getWidth()/3);
 
-        Text subText = new Text("Vedi le scale per il prossimo livello in lontananza..");
-        subText.setFill(Color.WHITE);
+        Text subText = new Text("Vedi le scale per il prossimo livello..");
+        subText.setFill(Color.ALICEBLUE);
         subText.setFont(Font.font("Power Red and Green", FontPosture.ITALIC, 24));
         subText.setTextAlignment(TextAlignment.CENTER);
         subText.setWrappingWidth(s.getWidth()/3);
 
         Button btnNewLvl = new Button("Prosegui");
         btnNewLvl.setFont(Font.font("Power Red and Green", 24));
+        btnNewLvl.setTextFill(Color.ALICEBLUE);
+        btnNewLvl.setBackground(bg);
+        btnNewLvl.setBorder(b);
         btnNewLvl.setPrefHeight(32);
         btnNewLvl.setPrefWidth(s.getWidth()/3);
         btnNewLvl.setAlignment(Pos.CENTER);
 
         Button btnBackToMenu = new Button("Torna al Menù");
         btnBackToMenu.setFont(Font.font("Power Red and Green", 24));
+        btnBackToMenu.setTextFill(Color.ALICEBLUE);
+        btnBackToMenu.setBackground(bg);
+        btnBackToMenu.setBorder(b);
         btnBackToMenu.setPrefHeight(32);
         btnBackToMenu.setPrefWidth(s.getWidth()/3);
         btnBackToMenu.setAlignment(Pos.CENTER);
 
-        Button btnQuit = new Button("Salva ed esci");
+        Button btnQuit = new Button("Esci");
         btnQuit.setFont(Font.font("Power Red and Green", 24));
+        btnQuit.setTextFill(Color.ALICEBLUE);
+        btnQuit.setBackground(bg);
+        btnQuit.setBorder(b);
         btnQuit.setPrefHeight(32);
         btnQuit.setPrefWidth(s.getWidth()/3);
         btnQuit.setAlignment(Pos.CENTER);
 
         btnNewLvl.setOnAction(event -> {
-            Livello l = new Livello(hero);
+            Livello l = new Livello(hero, scena.getMusicPlayer());
             Stage x = (Stage) btnNewLvl.getScene().getWindow();
             x.requestFocus();
             x.setScene(l.getScenaLivello());
@@ -500,14 +574,12 @@ public class Livello {
         });
 
         btnBackToMenu.setOnAction(e -> {
-            SaveLoadParser slp = new SaveLoadParser();
-            slp.writeSave(hero);
+            scena.fadeOutMusic();
             scena.ReturnToMM();
         });
 
         btnQuit.setOnAction(e -> {
-            SaveLoadParser slp = new SaveLoadParser();
-            slp.writeSave(hero);
+            scena.fadeOutMusic();
             Stage x = (Stage) btnQuit.getScene().getWindow();x.close();
         });
 
@@ -528,5 +600,9 @@ public class Livello {
 
     public Scene getScenaLivello() {
         return scena.getScenaLivello();
+    }
+
+    public ScenaLivello getScena(){
+        return scena;
     }
 }

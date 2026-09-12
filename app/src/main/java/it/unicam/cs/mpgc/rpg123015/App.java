@@ -8,7 +8,6 @@ import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.*;
-import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
 import java.util.Objects;
@@ -43,4 +42,8 @@ public class App extends Application {
 
     }
 
+    public Object getGreeting() {
+        System.out.println("Welcome, challenger!");
+        return new String("Welcome, challenger!");
+    }
 }

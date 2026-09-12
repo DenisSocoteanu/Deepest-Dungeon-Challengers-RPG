@@ -12,7 +12,7 @@ public class Enemy extends Personaggio{
 
     public int xpOnKill;
 
-    public Enemy(LevelDifficulty diff, int numeroId) {
+    public Enemy(LevelDifficulty diff, int diffMod, int numeroId) {
         name = "e-" + diff.name() + numeroId;
 
         switch(diff)
@@ -21,37 +21,38 @@ public class Enemy extends Personaggio{
                 setIcon("/icons/EASYEnemy_Sprite.png");
                 setSTR(1);
                 setDEX(1);
-                maxHp = 17;
+                maxHp = 16+diffMod;
                 hp = maxHp;
-                xpOnKill = 2;
+                xpOnKill = Math.floorDiv(maxHp,5);
                 break;
             case MEDIUM:
                 setIcon("/icons/MEDIUMEnemy_Sprite.png");
                 setSTR(1);
                 setDEX(2);
-                maxHp = 23;
+                maxHp = 23+diffMod;
                 hp = maxHp;
-                xpOnKill = 3;
+                xpOnKill = Math.floorDiv(maxHp,6);
                 break;
             case HARD:
                 setIcon("/icons/HARDEnemy_Sprite.png");
                 setSTR(2);
                 setDEX(2);
-                maxHp = 35;
+                maxHp = 34+diffMod;
                 hp = maxHp;
-                xpOnKill = 4;
+                xpOnKill = Math.floorDiv(maxHp,7);
                 break;
             case BOSS:
                 setIcon("/icons/BOSSEnemy_Sprite.png");
-                setSTR(3);
+                setSTR(2);
                 setDEX(3);
-                maxHp = 53;
+                maxHp = 52+diffMod;
                 hp = maxHp;
-                xpOnKill = 6;
+                xpOnKill = Math.floorDiv(maxHp,6);
                 break;
         }
 
         setAttackAnim1("EASY_AttAni_1","/icons/QuickClaw.gif");
+        setAttackSfx("src/main/resources/audio/sfx_Claw.mp3");
         setActionsPerTurn(getDEX());
         hpbar = new ProgressBar();
         hpbar.setPrefSize(64,16);
@@ -64,7 +65,7 @@ public class Enemy extends Personaggio{
         /*A questo metodo viene passata una copia di arena, lo stato attuale della mappa. Il nemico controlla ogni azione valida (movimento o attaccare)
          * e la aggiunge a una piccola lista. L'azione viene presa casualmente da quella lista. return Action a livello che si occupa di chiamare executeTurn()
          */
-        List<Action> availableActions = new ArrayList<Action>();
+        List<Action> availableActions = new ArrayList<>();
 
         XYVector bersaglio = null;
         for(Personaggio[] p : arena)
@@ -77,8 +78,7 @@ public class Enemy extends Personaggio{
 
         if(range == 1)
         {
-            System.out.println(name + " attacca!");
-            Action a = new Action(bersaglio, TypeOfAction.ATTACK, getSTR(), getAttackAnim1(),getName());
+            Action a = new Action(bersaglio, TypeOfAction.ATTACK, getSTR(), getAttackAnim1(), getAttackSfx(),getName());
             availableActions.add(a);
         }
 
@@ -92,14 +92,13 @@ public class Enemy extends Personaggio{
 
         Random RANDOM = new Random();
         int r = RANDOM.nextInt(0,availableActions.size());
-        System.out.println(availableActions.get(r).getTypeOfAction().toString());
+        //System.out.println(availableActions.get(r).getTypeOfAction().toString());
 
         return availableActions.get(r);
     }
 
     public void RegHit(int dmg) {
         hp -= dmg;
-        System.out.println(name + " HP: " + hp);
         UpdateHPBar();
     }
 
@@ -151,11 +150,11 @@ public class Enemy extends Personaggio{
             }
             else // Posizione sfavorevole, incrementa la distanza
             {
-                System.out.println(name + " NON SI MUOVERA' MAI IN " + v.PrintXY());
+                //System.out.println(name + " NON SI MUOVERA' MAI IN " + v.PrintXY());
             }
         }
 
-        System.out.println("POSSIBLE PATHS: " + paths.size());
+        //System.out.println("POSSIBLE PATHS: " + paths.size());
         return paths;
     }
 

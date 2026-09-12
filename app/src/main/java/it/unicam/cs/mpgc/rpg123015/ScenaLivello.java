@@ -7,26 +7,36 @@ import java.util.List;
 import java.util.Objects;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+import org.jspecify.annotations.Nullable;
 
 
 public class ScenaLivello {
 
-    private MediaPlayer mp;
+    private MediaPlayer soundPlayer;
+    private MediaPlayer musicPlayer;
     private StackPane rootStackPane = new StackPane();
     private BorderPane pannello = new BorderPane();
     private GridPane pannelloArena;
@@ -35,33 +45,60 @@ public class ScenaLivello {
 
 
     //Il costruttuore genera immediatamente un'arena in base al livello di difficoltà scelto casualmente.
-    public ScenaLivello(String nEroe, int nVittorie, int lArena, int hArena) {
+    public ScenaLivello(String nEroe, int nVittorie, int lArena, int hArena, @Nullable MediaPlayer mp) {
         genScenaLayout(nEroe, nVittorie, lArena, hArena);
+        if (mp != null) {
+            setMusicPlayer(mp);
+        }
     }
 
     //Genera ed organizza gli elementi grafici della scena, come il numero delle colonne e righe, le celle ed il loro aspetto.
     private void genScenaLayout(String nEroe, int nVittorie, int lArena, int hArena) {
-        int leftArea =200, bottomArea = 128;
+        int leftArea =200, bottomArea = 108;
         int lScena, hScena;
-        lScena = leftArea+(lArena*64)+64;
+        lScena = leftArea+(lArena*64)+64+12;
         hScena = (hArena*64)+bottomArea+12;
+
+        //------ Gradient Block ------
+        Stop[] stop = {new Stop(0, Color.color(0.372,0.533,0.518)),
+                new Stop(1, Color.color(0.184,0.314,0.372))};
+
+        LinearGradient linear_gradient = new LinearGradient(0, 0,
+                0, 1, true, CycleMethod.NO_CYCLE, stop);
+        BackgroundFill backgroundFill = new BackgroundFill(linear_gradient, CornerRadii.EMPTY, Insets.EMPTY);
+        Background bg = new Background(backgroundFill);
+        //------ Gradient Block - Border Block ------
+        BorderStrokeStyle bss = new BorderStrokeStyle(StrokeType.OUTSIDE, StrokeLineJoin.ROUND, StrokeLineCap.ROUND, 0,0, null);
+        BorderStroke bs = new BorderStroke(Color.ALICEBLUE, bss, CornerRadii.EMPTY, new BorderWidths(31));
+        Border b = new Border(bs);
+        //------ Border Block ------
 
         rootStackPane.getChildren().add(pannello);
         scenaLivello = new Scene(rootStackPane,lScena,hScena);
 
         scenaLivello.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/MM_ScenaLvl.css")).toExternalForm());
+        pannello.setBackground(bg);
+
 
         //------------ Top Area -----------------------
+        TextFlow areaTitolo = new TextFlow();
+        areaTitolo.setMinHeight(24);
+        areaTitolo.setPrefHeight(24);
         Text titoloLivello = new Text("Discesa di " + nEroe + " - Piano B-" + nVittorie);
-        pannello.setTop(titoloLivello);
+        titoloLivello.setFont(Font.font("Power Red and Green", FontWeight.BOLD, 20));
+        areaTitolo.getChildren().add(titoloLivello);
+        pannello.setTop(areaTitolo);
+        BorderPane.setMargin(areaTitolo, new Insets(24,0,0,12));
 
         //------------ Right Area -----------
-        stats = new GridPane(0,0);
+        stats = new GridPane(4,4);
         stats.setId("statsPane");
         pannello.setRight(stats);
+        BorderPane.setMargin(stats, new Insets(0,4,0,4));
 
         //----------- Center Area -------------------------
         pannelloArena = new GridPane(0,0);
+        pannelloArena.setBorder(b);
         pannelloArena.setFocusTraversable(false);
         GridPane.setValignment(pannelloArena, VPos.CENTER);
         GridPane.setHalignment(pannelloArena, HPos.CENTER);
@@ -70,27 +107,29 @@ public class ScenaLivello {
 
         //----------- Left Area ------------------------
         TextArea actionLog = new TextArea("Action Log");
-        actionLog.setFont(Font.font("Power Red and Green", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 17));
+        actionLog.setFont(Font.font("Power Red and Green", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 16));
+        actionLog.setOpacity(0.5);
         actionLog.appendText("\nSei sceso più a fondo nel dungeon...");
         actionLog.setId("ActionLogPane");
         actionLog.setFocusTraversable(false);
         actionLog.setEditable(false);
         actionLog.setWrapText(true);
-        actionLog.setMinHeight(hArena*64);
-        actionLog.setPrefHeight(hArena*64);
+        actionLog.setMinHeight(64*hArena);
+        actionLog.setPrefHeight(64*hArena);
+        actionLog.setMaxHeight(64*hArena);
         actionLog.setPrefWidth(leftArea);
         pannello.setLeft(actionLog);
-
-        //----------- Bottom Area ------------------------
-        VBox bottomPane = new VBox();
-        bottomPane.setStyle("-fx-background-color: blue;");
-        bottomPane.setSpacing(10);
-        bottomPane.setPrefHeight(bottomArea);
-        pannello.setBottom(bottomPane);
 
         actionLog.setOnMouseClicked(event -> {
             pannelloArena.requestFocus();
         });
+        //----------- Bottom Area ------------------------
+        VBox bottomPane = new VBox();
+        bottomPane.setSpacing(12);
+        bottomPane.setPrefHeight(bottomArea);
+        BorderPane.setMargin(bottomPane, new Insets(0,0,0,12));
+        pannello.setBottom(bottomPane);
+
     }
 
 
@@ -185,7 +224,6 @@ public class ScenaLivello {
         Pane p = FindPaneByChildId(id);
         assert p != null;
         p.getChildren().remove(0, p.getChildren().size());
-        System.out.println("ELIMINATO l'elemento");
     }
 
     public void SpawnAux(Auxiliary aux, int x, int y) {
@@ -235,7 +273,6 @@ public class ScenaLivello {
         assert p != null;
 
         p.getChildren().removeLast();
-        System.out.println("ELIMINATO l'aux");
     }
 
 
@@ -256,13 +293,70 @@ public class ScenaLivello {
 
     public void PlayOOBsound(){
         Media thompThomp = new Media(new File("src/main/resources/audio/ThompThomp.mp3").toURI().toString());
-        mp = new MediaPlayer(thompThomp);
-        mp.play();
+        soundPlayer = new MediaPlayer(thompThomp);
+        soundPlayer.play();
+    }
+
+    public void playSound(Media sound){
+        soundPlayer = new MediaPlayer(sound);
+        soundPlayer.play();
+    }
+
+    public MediaPlayer getMusicPlayer() {
+        return musicPlayer;
+    }
+    public void setMusicPlayer(MediaPlayer mp) {
+        this.musicPlayer = mp;
+        musicPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                musicPlayer.seek(Duration.ZERO);
+                musicPlayer.play();
+            }
+        });
+
+    }
+
+    public void fadeInMusic()
+    {
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(3),
+                        new KeyValue(musicPlayer.volumeProperty(),0.71))
+        );
+        timeline.play();
+    }
+
+    public void playBGM()
+    {
+        Media fightOST = new Media(new File("src/main/resources/audio/DDC_bgm_Fight.mp3").toURI().toString());
+        musicPlayer = new MediaPlayer(fightOST);
+        musicPlayer.play();
+        musicPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                musicPlayer.seek(Duration.ZERO);
+                musicPlayer.play();
+            }
+        });
+    }
+
+    public void fadeOutMusic()
+    {
+        if(null != musicPlayer)
+        {
+            Timeline timeline = new Timeline(
+                    new KeyFrame(Duration.seconds(3),
+                            new KeyValue(musicPlayer.volumeProperty(),0))
+            );
+            timeline.play();
+            timeline.setOnFinished(e -> {
+                musicPlayer.stop();
+            });
+        }
     }
 
     public void getStats(int hp, int maxHp, int STR, int DEX, int lvl, int exp, int maxexp, ProgressBar expBar) {
 
-        System.out.println(hp + "/" + maxHp);
         IniGrid(stats, 2, (int) Math.ceil((double) maxHp /2)+1, 32);//Viene popolata l'area di destra con le stat del giocatore
 
         TextFlow ps = new TextFlow(), pd = new TextFlow();
@@ -272,9 +366,9 @@ public class ScenaLivello {
         pd.setTextAlignment(TextAlignment.CENTER);
 
         Text ts = new Text(""+STR), td = new Text(""+DEX);
-        ts.setFont(Font.font("Power Red and Green", FontWeight.BOLD, 40));
-        td.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 40));
-        ts.setFill(Color.WHITE); td.setFill(Color.WHITE);
+        ts.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 32));
+        td.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 32));
+        ts.setFill(Color.ALICEBLUE); td.setFill(Color.ALICEBLUE);
         ts.setStrokeWidth(2); td.setStrokeWidth(2);
         ts.setStroke(Color.BLACK); td.setStroke(Color.BLACK);
         ps.getChildren().add(ts); pd.getChildren().add(td);
@@ -300,27 +394,29 @@ public class ScenaLivello {
             }
             iv.setId("hi"+i);
             p.getChildren().add(iv);
-            System.out.println((i%2)+ ","+ (int) Math.floor((double) i /2));
+            //System.out.println((i%2)+ ","+ (int) Math.floor((double) i /2));
             stats.add(p, (i%2), (int) Math.floor((double) i /2)+1 );
         }
 
         HBox expBox = new HBox(10);
 
-        expBox.setStyle("-fx-background-color:green;");
-        expBox.setPadding(new Insets(10,4,10,10));
+        //expBox.setStyle("-fx-background-color:green;");
+        expBox.setPadding(new Insets(12,8,12,12));
         expBox.setPrefWidth(scenaLivello.getWidth());
         expBar.setPrefWidth(scenaLivello.getWidth());
 
         Text lvlText = new Text(""+lvl);
+        lvlText.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 24));
+        lvlText.setFill(Color.ALICEBLUE);
         Text expText = new Text(exp + " / " + maxexp);
-        Text legenda = new Text("[W][A][S][D] muoviti [Z] attacco a distanza [ESC] pausa");
-        lvlText.setStyle("-fx-font-family:'Power Red and Green';-fx-font-size:24;-fx-fill:#ffffff;");
-        expText.setStyle("-fx-font-family:'Power Red and Green';-fx-font-size:24;-fx-fill:#ffffff;");
-        legenda.setStyle("-fx-font-family:'Power Red and Green';-fx-font-size:24;-fx-fill:#ffffff;");
+        expText.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 24));
+        expText.setFill(Color.ALICEBLUE);
+        Text legenda = new Text("[↑][←][↓][→] muoviti [Z] attacco a distanza → [X] annulla [ESC] pausa");
+        legenda.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 16));
+        legenda.setFill(Color.ALICEBLUE);
 
         expBox.getChildren().addAll(lvlText, expBar, expText);
         ((Pane)(pannello.getBottom())).getChildren().addAll(expBox,legenda);
-        System.out.println(pannello.getBottom().getStyle());
     }
 
     public void updateEXP(int lvl, int exp, int maxexp)
@@ -373,7 +469,7 @@ public class ScenaLivello {
         iv.setId("hi"+m);
         p.getChildren().add(iv);
         p.setId("bh"+m);
-        System.out.println((m%2)+ ","+ (int) Math.floor((double) m /2));
+        //System.out.println((m%2)+ ","+ (int) Math.floor((double) m /2));
         stats.add(p, (m%2), (int) Math.floor((double) m /2)+1 );
     }
 
@@ -381,7 +477,7 @@ public class ScenaLivello {
     {
         Text t = (Text) ((TextFlow)stats.getChildren().get(0)).getChildren().getFirst();
         t.setText(""+str);
-        ((TextFlow)stats.getChildren().get(1)).getChildren().set(0, t);
+        ((TextFlow)stats.getChildren().get(0)).getChildren().set(0, t);
     }
 
     public void updateDEX(int dex)
@@ -395,6 +491,7 @@ public class ScenaLivello {
     {
         ((TextArea)pannello.getLeft()).appendText("\n"+action);
     }
+
 
     public StackPane getStackPane() {
         return rootStackPane;

@@ -8,14 +8,10 @@
     -fx-font-size: 24;
 }
 
-#pannelloMM{
-    -fx-background-color: #ff00ff;
-}
 
 #statsPane {
     -fx-font-family: "Power Red and Green";
     -fx-font-size: 20;
-    -fx-color: #ff0000;
 
 }
 

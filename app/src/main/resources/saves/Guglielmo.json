@@ -1,1 +1,1 @@
-{"STR":6,"maxHP":10,"isAlive":true,"vittorie":4,"level":6,"attack_animation":"\/icons\/QuickSlash.gif","DEX":4,"icon":"file:\/D:\/ProgettiUnicam\/Deepest-Dungeon-RPG\/app\/build\/resources\/main\/icons\/AvatarSprite.png","HP":6,"nome":"Guglielmo","exp":4,"exp_to_level_up":21}
+{"STR":6,"maxHP":10,"isAlive":false,"vittorie":0,"level":2,"attack_animation":"\/icons\/QuickSlash.gif","DEX":2,"icon":"file:\/D:\/ProgettiUnicam\/Deepest-Dungeon-RPG\/app\/build\/resources\/main\/icons\/AvatarDead.png","HP":0,"nome":"Guglielmo","exp":0,"exp_to_level_up":7}

@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg123015;
 
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
 
 public class Action {
     private String masterID;
@@ -15,12 +16,14 @@ public class Action {
 
     private int dmg;
     private Auxiliary attAnim;
-    public Action(XYVector targetPosition, TypeOfAction type , int dmg, Auxiliary attackAnimation, String actor) {
+    private Media attSfx;
+    public Action(XYVector targetPosition, TypeOfAction type , int dmg, Auxiliary attackAnimation, Media attSfx, String actor) {
         setMasterID(actor);
         setXYVector(targetPosition);
         setTypeOfAction(type);
         setDmg(dmg);
         setAttAnim(attackAnimation);
+        setAttSfx(attSfx);
     }
 
     public Action(TypeOfAction t, String actor) {
@@ -54,4 +57,10 @@ public class Action {
 
     public Auxiliary getAttackAnimation(){return attAnim;}
     public void setAttAnim(Auxiliary attAnim){this.attAnim = attAnim;}
+
+    public Media getAttSfx(){return attSfx;}
+    public void setAttSfx(Media attSfx)
+    {
+        this.attSfx = attSfx;
+    }
 }

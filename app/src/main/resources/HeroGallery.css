@@ -2,3 +2,9 @@
     font-family: 'Power Red and Green';
     src: url('fonts/pkmnfl.ttf');
 }
+#HeroGallery{
+    -fx-background-image: url("/icons/HeroGalleryBG.jpg");
+    -fx-background-repeat: stretch;
+    -fx-background-size: 800 494;
+    -fx-background-position: center center;
+}

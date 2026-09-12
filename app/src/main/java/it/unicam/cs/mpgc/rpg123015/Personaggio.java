@@ -2,7 +2,9 @@ package it.unicam.cs.mpgc.rpg123015;
 
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
 
+import java.io.File;
 import java.util.Random;
 
 public abstract class Personaggio implements Actions {
@@ -14,6 +16,7 @@ public abstract class Personaggio implements Actions {
     public ProgressBar hpbar;
     private Image icon;
     private Auxiliary AttackAnim1;
+    private Media attackSfx;
 
     //Coordinate
     public XYVector position;
@@ -65,11 +68,11 @@ public abstract class Personaggio implements Actions {
     public void Move(XYVector movement)
     {
         UpdatePosition(movement);
-        System.out.println("POSIZIONE: " + position.getX() + ", " + position.getY());
+        //System.out.println("POSIZIONE: " + position.getX() + ", " + position.getY());
     }
 
     public Action TakeAction() {
-        System.out.println(name + " ha agito!");
+        //System.out.println(name + " ha agito!");
         return null;
     }
 
@@ -82,7 +85,6 @@ public abstract class Personaggio implements Actions {
 
     public void RegHit(int dmg) {
         hp -= dmg;
-        System.out.println(name + " HP: " + hp);
     }
 
     public void setAttackAnim1(String id, String url) {
@@ -90,5 +92,13 @@ public abstract class Personaggio implements Actions {
     }
     public Auxiliary getAttackAnim1(){
         return AttackAnim1;
+    }
+
+    public void setAttackSfx(String url){
+        attackSfx = new Media(new File(url).toURI().toString());
+    }
+    public Media getAttackSfx()
+    {
+        return attackSfx;
     }
 }
