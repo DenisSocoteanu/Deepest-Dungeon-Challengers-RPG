@@ -374,7 +374,7 @@ public class Livello {
             }
         } else if (azione.getTypeOfAction().equals(TypeOfAction.WAIT)) {
             {
-                System.out.println("Boh qua non fa niente");
+                System.out.println(azione.getMasterID() + " mangia popcorn");
             }
 
         }

@@ -105,18 +105,25 @@ public class HeroGallery {
         scrollRightButton.setFont(Font.font("Power Red and Green", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 16));
 
         scrollLeftButton.setOnAction(e -> {
-            pageNumber--;
-            showSaves();
-            checkDisability(scrollLeftButton, scrollRightButton);
+            if(pageNumber == 0)
+            {
+                fadeOutMusic();
+                returnToMM();
+            }
+            else {
+                pageNumber--;
+                showSaves();
+                checkDisability(scrollRightButton);
+            }
         });
 
         scrollRightButton.setOnAction(e -> {
             pageNumber++;
             showSaves();
-            checkDisability(scrollLeftButton, scrollRightButton);
+            checkDisability(scrollRightButton);
         });
 
-        checkDisability(scrollLeftButton, scrollRightButton);
+        checkDisability(scrollRightButton);
 
         pannello.setLeft(scrollLeftButton);
         pannello.setRight(scrollRightButton);
@@ -141,20 +148,13 @@ public class HeroGallery {
         pannello.setCenter(areaSalvataggi);
     }
 
-    private void checkDisability(Button scrollLeftButton, Button scrollRightButton){
+    private void checkDisability(Button scrollRightButton){
 
         if ((pageNumber+1)*6 >= pSalvataggi.size()) {
             scrollRightButton.setDisable(true);
         }
         else {
             scrollRightButton.setDisable(false);
-        }
-
-        if(pageNumber == 0){
-            scrollLeftButton.setDisable(true);
-        }
-        else {
-            scrollLeftButton.setDisable(false);
         }
     }
 
@@ -165,7 +165,7 @@ public class HeroGallery {
     private void loadAllSaves()
     {
         //------ Blocco quale definisce il gradiente dei pulsanti ------
-        // 180,231,188 177,216,189 // 95,136,132 47,80,95
+        // 95,136,132 47,80,95
         Stop[] stop = {new Stop(0, Color.color(0.372,0.533,0.518)),
                 new Stop(1, Color.color(0.184,0.314,0.372))};
 
@@ -175,7 +175,7 @@ public class HeroGallery {
         Background bg = new Background(backgroundFill);
         //------ bg può essere aggiunto a un qualunque button.setBackground() - Border Block ------
         BorderStrokeStyle bss = new BorderStrokeStyle(StrokeType.OUTSIDE, StrokeLineJoin.ROUND, StrokeLineCap.ROUND, 0,0, null);
-        BorderStroke bs = new BorderStroke(Color.color(0.706,0.906,0.737), bss, CornerRadii.EMPTY, new BorderWidths(3));
+        BorderStroke bs = new BorderStroke(Color.ALICEBLUE, bss, CornerRadii.EMPTY, new BorderWidths(3));
         Border b = new Border(bs);
         //------ Border Block ------
 
@@ -199,6 +199,7 @@ public class HeroGallery {
                 FlowPane p = new FlowPane(Orientation.HORIZONTAL,32,16);
                 FlowPane.setMargin(iv, new Insets(8,0,0,8));
                 FlowPane.setMargin(lLvl, new Insets(8,0,0,8));
+                FlowPane.setMargin(lVitt, new Insets(8,0,0,8));
                 p.setStyle("-fx-background-color: rgba(216,216,216,0.85);");
                 p.getChildren().addAll(iv,lNome,lLvl, lVitt);
                 if(a.getIsAlive())
@@ -206,7 +207,7 @@ public class HeroGallery {
                     Button loadSave = new Button("Carica Eroe");
                     loadSave.setFont(Font.font("Power Red and Green", FontWeight.BOLD, FontPosture.REGULAR, 16));
                     loadSave.setBorder(b);
-                    loadSave.setTextFill(Color.WHITE);
+                    loadSave.setTextFill(Color.ALICEBLUE);
                     loadSave.setBackground(bg);
                     loadSave.setOnAction(event -> {
                         fadeOutMusic();
