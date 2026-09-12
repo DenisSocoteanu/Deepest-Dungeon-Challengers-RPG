@@ -1,7 +1,4 @@
-@font-face {
-    font-family: 'Power Red and Green';
-    src: url('fonts/pkmnfl.ttf');
-}
+
 #HeroGallery{
     -fx-background-image: url("/icons/HeroGalleryBG.jpg");
     -fx-background-repeat: stretch;

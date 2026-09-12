@@ -411,7 +411,7 @@ public class ScenaLivello {
         Text expText = new Text(exp + " / " + maxexp);
         expText.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 24));
         expText.setFill(Color.ALICEBLUE);
-        Text legenda = new Text("[↑][←][↓][→] muoviti [Z] attacco a distanza → [X] annulla [ESC] pausa");
+        Text legenda = new Text("[↑][←][↓][→] muoviti | attacca [Z] attacco a distanza → [X] annulla [ESC] pausa");
         legenda.setFont(Font.font("Power Red and Green", FontWeight.NORMAL, 16));
         legenda.setFill(Color.ALICEBLUE);
 
