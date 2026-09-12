@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileReader;
 
+import javafx.scene.image.ImageView;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,7 +21,7 @@ public class SaveLoadParser {
         JSONObject nSave = new JSONObject();
 
         nSave.put("nome", a.name);
-        nSave.put("icon", a.getIcon().getUrl());
+        nSave.put("icon", a.getIconDir());
         nSave.put("attack_animation", a.getAttackAnim1().getImageDir());
         nSave.put("STR", a.getSTR());
         nSave.put("DEX", a.getDEX());

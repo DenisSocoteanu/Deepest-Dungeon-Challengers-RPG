@@ -33,6 +33,7 @@ public class Avatar extends Personaggio {
     public int lvl;
     public ProgressBar expBar;
     private int vittorie;
+    private String iconDir;
 
     public Image iconaArco = new Image("/icons/ArcherSprite.png");
     public Auxiliary attackAnimation2 = new Auxiliary("attAnimArco", "/icons/QuickPierce.gif", AuxType.ANIMATION);
@@ -44,7 +45,8 @@ public class Avatar extends Personaggio {
     public Avatar(String nome)
     {
         setNome(nome);
-        setIcon("/icons/AvatarSprite.png");
+        setIconDir("/icons/AvatarSprite.png");
+        setIcon(getIconDir());
         setAttackAnim1("Avatar_AttAni_1","/icons/QuickSlash.gif");
         setAttackSfx("src/main/resources/audio/sfx_Slash.mp3");
         setSTR(6);
@@ -93,12 +95,16 @@ public class Avatar extends Personaggio {
         isAlive = isA;
     }
 
+    public String getIconDir() { return iconDir; }
+    public void setIconDir(String iconD) { iconDir = iconD; }
+
     public boolean getIsAlive() {
         return isAlive;
     }
     public void KILL() {
         isAlive = false;
-        setIcon("/icons/AvatarDead.png");
+        setIconDir("/icons/AvatarDead.png");
+        setIcon(getIconDir());
     }
 
     public int getVittorie()

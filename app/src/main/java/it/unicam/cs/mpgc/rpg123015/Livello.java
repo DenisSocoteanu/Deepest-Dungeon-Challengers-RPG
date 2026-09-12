@@ -409,10 +409,10 @@ public class Livello {
         pauseM.setStyle("-fx-background-color: rgba(14,14,14,0.7);");
 
         ImageView titleCard = new ImageView(new Image("/icons/TitleCard.png"));
-        Text subTitle = new Text("\"Le scale.. non sono lontane\"");
+        Text subTitle = new Text("Sei ancora in tempo per tornare indietro");
         subTitle.setFont(Font.font("Power Red and Green", 28));
         subTitle.setFill(Color.WHITE);
-        pauseM.setAlignment(Pos.CENTER);
+        pauseM.setAlignment(Pos.TOP_CENTER);
 
         Button continua = new Button("Continua");
         continua.setFont(Font.font("Power Red and Green", 24));
@@ -473,7 +473,7 @@ public class Livello {
         defeatMenu.setStyle("-fx-background-color: rgba(14,14,14,0.7);");
 
         ImageView titleCard = new ImageView(new Image("/icons/TitleCard.png"));
-        Text subTitle = new Text("Discesa di "+ hero.name + " | B-"+hero.getVittorie());
+        Text subTitle = new Text(hero.name + " non superò mai il piano B-" + hero.getVittorie());
         subTitle.setFont(Font.font("Power Red and Green", 28));
         subTitle.setFill(Color.ALICEBLUE);
         defeatMenu.setAlignment(Pos.CENTER);
