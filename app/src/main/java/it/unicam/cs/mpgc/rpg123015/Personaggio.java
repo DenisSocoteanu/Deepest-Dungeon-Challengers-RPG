@@ -2,22 +2,24 @@ package it.unicam.cs.mpgc.rpg123015;
 
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
 
+import java.io.File;
 import java.util.Random;
 
 public abstract class Personaggio implements Actions {
     public String name;
-    public int maxHp = 10;
+    public int maxHp;
     public int hp = maxHp;
     private int STR, DEX;
+    public int actionsPerTurn;
     public ProgressBar hpbar;
     private Image icon;
     private Auxiliary AttackAnim1;
+    private Media attackSfx;
 
     //Coordinate
     public XYVector position;
-    //Ogni personaggio esiste nei confini dell'arena. Pertanto, ogni personaggio è cosciente delle dimensioni dell'arena. La dimensione massima è chiamata upper-limit
-    public XYVector upperLimits;
 
     public Personaggio() {}
 
@@ -41,28 +43,37 @@ public abstract class Personaggio implements Actions {
         this.DEX = DEX;
     }
 
+    public int getActionsPerTurn() {return actionsPerTurn;}
+    public void setActionsPerTurn(int mod)
+    {
+        this.actionsPerTurn = mod;
+    }
+    public void decAPT()
+    {
+        setActionsPerTurn(getActionsPerTurn()-1);
+    }
+
     public int getX() { return position.getX(); }
     public int getY() { return position.getY(); }
 
-    public void setX(int x) { position.setX(x); }
-    public void setY(int y) { position.setY(y); }
+    public void UpdatePosition(XYVector movement) {
+        position.setX(movement.getX());
+        position.setY(movement.getY());
+    }
 
     public void Spawn(int x, int y) {
         position = new XYVector(x, y);
     }
 
-    public void Move(XYVector movement) {
-        System.out.println("Placeholder Movement");
+    public void Move(XYVector movement)
+    {
+        UpdatePosition(movement);
+        //System.out.println("POSIZIONE: " + position.getX() + ", " + position.getY());
     }
 
     public Action TakeAction() {
-        System.out.println(name + " ha agito!");
+        //System.out.println(name + " ha agito!");
         return null;
-    }
-
-    public void UpdatePosition(XYVector movement) {
-        position.setX(movement.getX());
-        position.setY(movement.getY());
     }
 
     public Image getIcon() {
@@ -74,13 +85,20 @@ public abstract class Personaggio implements Actions {
 
     public void RegHit(int dmg) {
         hp -= dmg;
-        System.out.println(name + " HP: " + hp);
     }
 
     public void setAttackAnim1(String id, String url) {
-        AttackAnim1 = new Auxiliary(id, url);
+        AttackAnim1 = new Auxiliary(id, url, AuxType.ANIMATION);
     }
     public Auxiliary getAttackAnim1(){
         return AttackAnim1;
+    }
+
+    public void setAttackSfx(String url){
+        attackSfx = new Media(new File(url).toURI().toString());
+    }
+    public Media getAttackSfx()
+    {
+        return attackSfx;
     }
 }

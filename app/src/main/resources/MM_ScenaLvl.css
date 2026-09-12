@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'Power Red and Green';
+    src: url('fonts/pkmnfl.ttf');
+}
+
+.text {
+    -fx-font-family: "Power Red and Green";
+    -fx-font-size: 24;
+}
+
+
+#statsPane {
+    -fx-font-family: "Power Red and Green";
+    -fx-font-size: 20;
+
+}
+
+#VictoryPane {
+    -fx-background-color: rgba(14,14,14,0.7);
+}
+
+
+#ActionLogPane .text {
+    -fx-line-spacing: 4px;
+}

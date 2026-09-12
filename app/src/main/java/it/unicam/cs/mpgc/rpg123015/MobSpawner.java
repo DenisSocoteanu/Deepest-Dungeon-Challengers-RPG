@@ -12,10 +12,27 @@ public class MobSpawner {
         this.hArena = hArena;
     }
 
-    public List<Enemy> SpawnEnemies(int enemyValue)
+    public List<Enemy> SpawnEnemies(LevelDifficulty stageDiff, int diffMod)
     {
         int nE = 0, nM = 0, nH = 0;
         List<Enemy> enemyList = new ArrayList<>();
+
+        int enemyValue = diffMod;
+        switch (stageDiff) {
+            case EASY:
+                enemyValue += 12;
+                break;
+            case MEDIUM:
+                enemyValue += 27;
+                break;
+            case HARD:
+                enemyValue += 42;
+                break;
+            case BOSS:
+                enemyValue += 15;
+                break;
+
+        }
 
         while(enemyValue >= 4)
         {
@@ -24,21 +41,21 @@ public class MobSpawner {
             {
                 case EASY:
                 {
-                    enemyList.add(new Enemy(enemyDiff, nE, new XYVector(lArena, hArena) ));
+                    enemyList.add(new Enemy(enemyDiff, diffMod, nE));
                     nE++;
                     enemyValue-=4;
                     break;
                 }
                 case MEDIUM:
                 {
-                    enemyList.add(new Enemy(enemyDiff, nM, new XYVector(lArena, hArena) ));
+                    enemyList.add(new Enemy(enemyDiff, diffMod, nM));
                     nM++;
                     enemyValue-=9;
                     break;
                 }
                 case HARD:
                 {
-                    enemyList.add(new Enemy(enemyDiff, nH, new XYVector(lArena, hArena) ));
+                    enemyList.add(new Enemy(enemyDiff, diffMod, nH));
                     nH++;
                     enemyValue-=19;
                     break;

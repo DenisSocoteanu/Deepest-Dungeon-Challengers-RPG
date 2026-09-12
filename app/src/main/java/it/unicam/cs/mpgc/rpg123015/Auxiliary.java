@@ -5,17 +5,22 @@ import javafx.scene.image.Image;
 public class Auxiliary implements Actions{
     public String name;
     public XYVector position;
+    public AuxType auxType;
+    private String imageDir;
     private Image image;
 
-    public Auxiliary(String name, String image) {
+    public Auxiliary(String name, String image, AuxType type) {
         this.name = name;
-        this.image = new Image(image);
+        this.imageDir = image;
+        this.image = new Image(imageDir);
+        this.auxType = type;
     }
 
-    public Auxiliary(String name, String image, int x, int y) {
+    public Auxiliary(String name, String image, int x, int y, AuxType type) {
         this.name = name;
         this.image = new Image(image);
         this.position = new XYVector(x, y);
+        this.auxType = type;
     }
 
     public int getX() { return position.getX(); }
@@ -23,6 +28,9 @@ public class Auxiliary implements Actions{
 
     public void setX(int x) { position.setX(x); }
     public void setY(int y) { position.setY(y); }
+
+    public String getImageDir() { return imageDir; }
+    public void setImageDir(String imageDir) { this.imageDir = imageDir; }
 
     public Image getImage() { return image; }
     public void setImage(Image image) { this.image = image; }
