@@ -1,1 +1,1 @@
-{"STR":6,"maxHP":10,"isAlive":false,"vittorie":0,"level":1,"attack_animation":"\/icons\/QuickSlash.gif","DEX":2,"icon":"\/icons\/AvatarDead.png","HP":0,"nome":"Guglielmo","exp":0,"exp_to_level_up":5}
+{"STR":20,"maxHP":20,"isAlive":false,"vittorie":999,"level":99,"attack_animation":"\/icons\/QuickSlash.gif","DEX":10,"icon":"\/icons\/AvatarDead.png","HP":-1,"nome":"Guglielmo","exp":998,"exp_to_level_up":999}
