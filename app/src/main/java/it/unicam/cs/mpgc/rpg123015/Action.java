@@ -1,6 +1,5 @@
 package it.unicam.cs.mpgc.rpg123015;
 
-import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 
 public class Action {

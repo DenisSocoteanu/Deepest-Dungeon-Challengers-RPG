@@ -5,7 +5,6 @@ import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 
 import java.io.File;
-import java.util.Random;
 
 public abstract class Personaggio implements Actions {
     public String name;
@@ -63,17 +62,6 @@ public abstract class Personaggio implements Actions {
 
     public void Spawn(int x, int y) {
         position = new XYVector(x, y);
-    }
-
-    public void Move(XYVector movement)
-    {
-        UpdatePosition(movement);
-        //System.out.println("POSIZIONE: " + position.getX() + ", " + position.getY());
-    }
-
-    public Action TakeAction() {
-        //System.out.println(name + " ha agito!");
-        return null;
     }
 
     public Image getIcon() {

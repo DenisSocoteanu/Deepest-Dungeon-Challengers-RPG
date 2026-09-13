@@ -1,21 +1,16 @@
 package it.unicam.cs.mpgc.rpg123015;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileReader;
 
-import javafx.scene.image.ImageView;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 //import com.github.cliftonlabs.json_simple.*;
 
 public class SaveLoadParser {
 
-    public SaveLoadParser() {
-
-    }
+    public SaveLoadParser() {}
 
     public void writeSave(Avatar a) {
         JSONObject nSave = new JSONObject();

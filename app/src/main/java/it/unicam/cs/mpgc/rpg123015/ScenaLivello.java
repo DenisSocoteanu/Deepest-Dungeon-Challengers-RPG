@@ -1,7 +1,6 @@
 package it.unicam.cs.mpgc.rpg123015;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +12,6 @@ import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -30,6 +28,7 @@ import javafx.stage.Stage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+
 import org.jspecify.annotations.Nullable;
 
 
@@ -62,7 +61,6 @@ public class ScenaLivello {
         //------ Gradient Block ------
         Stop[] stop = {new Stop(0, Color.color(0.372,0.533,0.518)),
                 new Stop(1, Color.color(0.184,0.314,0.372))};
-
         LinearGradient linear_gradient = new LinearGradient(0, 0,
                 0, 1, true, CycleMethod.NO_CYCLE, stop);
         BackgroundFill backgroundFill = new BackgroundFill(linear_gradient, CornerRadii.EMPTY, Insets.EMPTY);
@@ -71,7 +69,7 @@ public class ScenaLivello {
         BorderStrokeStyle bss = new BorderStrokeStyle(StrokeType.OUTSIDE, StrokeLineJoin.ROUND, StrokeLineCap.ROUND, 0,0, null);
         BorderStroke bs = new BorderStroke(Color.ALICEBLUE, bss, CornerRadii.EMPTY, new BorderWidths(31));
         Border b = new Border(bs);
-        //------ Border Block ------
+        //------ Border Block - Elementi Base ------
 
         rootStackPane.getChildren().add(pannello);
         scenaLivello = new Scene(rootStackPane,lScena,hScena);
@@ -80,7 +78,7 @@ public class ScenaLivello {
         pannello.setBackground(bg);
 
 
-        //------------ Top Area -----------------------
+        //------------ Elementi Base - Top Area -----------------------
         TextFlow areaTitolo = new TextFlow();
         areaTitolo.setMinHeight(24);
         areaTitolo.setPrefHeight(24);
@@ -314,7 +312,6 @@ public class ScenaLivello {
                 musicPlayer.play();
             }
         });
-
     }
 
     public void fadeInMusic()
