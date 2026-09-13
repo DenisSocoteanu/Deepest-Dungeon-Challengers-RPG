@@ -1,7 +1,5 @@
 package it.unicam.cs.mpgc.rpg123015;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.control.ProgressBar;
 
 import java.util.ArrayList;
@@ -63,8 +61,7 @@ public class Enemy extends Personaggio{
     public Action TakeAction(Personaggio[][] arena)
     {
         /*A questo metodo viene passata una copia di arena, lo stato attuale della mappa. Il nemico controlla ogni azione valida (movimento o attaccare)
-         * e la aggiunge a una piccola lista. L'azione viene presa casualmente da quella lista. return Action a livello che si occupa di chiamare executeTurn()
-         */
+         * e la aggiunge a una piccola lista. L'azione viene presa casualmente da quella lista. ritorna Action a livello che si occupa di chiamare executeTurn()*/
         List<Action> availableActions = new ArrayList<>();
 
         XYVector bersaglio = null;

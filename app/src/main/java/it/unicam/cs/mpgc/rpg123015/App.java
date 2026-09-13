@@ -18,7 +18,7 @@ public class App extends Application {
     Scene scena;
 
     public static void main(String[] args) {
-        //metodo sincrono, aspetto che termini launch prima di eseguire il codice dopo
+        //NOTA: metodo sincrono, aspetto che termini launch prima di eseguire il codice dopo
         launch(args);
 
     }

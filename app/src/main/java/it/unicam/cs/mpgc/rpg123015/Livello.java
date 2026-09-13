@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Livello {
 
     private String nomeLvl;
-    private LevelStatus status;
+    //private LevelStatus status;
     private final ScenaLivello scena;
     private final Avatar hero;
 
@@ -333,7 +333,7 @@ public class Livello {
             actor = arena[a][b];
             arena[azione.getXYVector().getX()][azione.getXYVector().getY()] = actor;
             arena[a][b] = null;
-            actor.Move(azione.getXYVector());
+            actor.UpdatePosition(azione.getXYVector());
             scena.MoveEntity(actor.getIcon(),actor.name, azione.getXYVector().getX(), azione.getXYVector().getY());
             //System.out.println(azione.getMasterID() + " spostato da " + a + "," + b + " a " + azione.getXYVector().getX() + "," + azione.getXYVector().getY() );
 

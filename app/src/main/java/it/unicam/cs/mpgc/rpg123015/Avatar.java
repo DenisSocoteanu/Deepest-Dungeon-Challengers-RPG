@@ -20,10 +20,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Avatar extends Personaggio {
 
@@ -35,7 +31,6 @@ public class Avatar extends Personaggio {
     private int vittorie;
     private String iconDir;
 
-    public Image iconaArco = new Image("/icons/ArcherSprite.png");
     public Auxiliary attackAnimation2 = new Auxiliary("attAnimArco", "/icons/QuickPierce.gif", AuxType.ANIMATION);
 
     public Auxiliary target = new Auxiliary("targetSelection","/icons/TargetSelection.gif", AuxType.ALTRO);

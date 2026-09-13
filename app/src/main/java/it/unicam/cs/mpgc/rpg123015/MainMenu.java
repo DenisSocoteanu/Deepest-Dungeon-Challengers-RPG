@@ -3,9 +3,7 @@ package it.unicam.cs.mpgc.rpg123015;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -56,7 +54,6 @@ public class MainMenu{
         //------ Background Block - Gradient Block ------
         Stop[] stop = {new Stop(0, Color.color(0.372,0.533,0.518)),
                 new Stop(1, Color.color(0.184,0.314,0.372))};
-
         LinearGradient linear_gradient = new LinearGradient(0, 0,
                 0, 1, true, CycleMethod.NO_CYCLE, stop);
         BackgroundFill backgroundFill = new BackgroundFill(linear_gradient, CornerRadii.EMPTY, Insets.EMPTY);
@@ -78,7 +75,6 @@ public class MainMenu{
         btnNewGame.setPrefWidth(mmScene.getWidth()/3);
         btnNewGame.setAlignment(Pos.CENTER);
         btnNewGame.setOnAction(e -> {
-
             TextInputDialog td = new TextInputDialog("");
             td.setResizable(false);
             td.setHeaderText("Quale sarà il nome di questo eroe?");

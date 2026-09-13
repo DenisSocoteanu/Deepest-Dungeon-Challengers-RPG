@@ -41,17 +41,6 @@ public class Auxiliary implements Actions{
     }
 
     @Override
-    public void Move(XYVector movement) {
-        System.out.println("QUESTO SI MUOVE");
-    }
-
-    @Override
-    public Action TakeAction() {
-        System.out.println("HA FATTO QUALCOSA");
-        return null;
-    }
-
-    @Override
     public void UpdatePosition(XYVector position) {
         this.position.setX(position.getX());
         this.position.setY(position.getY());
