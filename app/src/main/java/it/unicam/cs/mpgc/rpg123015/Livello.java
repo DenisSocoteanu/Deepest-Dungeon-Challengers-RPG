@@ -5,7 +5,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -41,7 +40,7 @@ public class Livello {
     private List<Personaggio> initiativeOrder = new ArrayList<>();
     private final Personaggio[][] arena;
 
-    public Livello(Avatar h, @Nullable MediaPlayer mp) {
+    public Livello(Avatar h, @Nullable MediaPlayer musicP) {
 
         hero = h;
         nomeLvl = "l-" + h.name + h.getVittorie();
@@ -51,10 +50,10 @@ public class Livello {
 
         arena = new Personaggio[lArena][hArena];
 
-        if (mp == null)
+        if (musicP == null)
             scena = new ScenaLivello(h.name, h.getVittorie(), lArena, hArena, null);
         else
-            scena = new ScenaLivello(h.name, h.getVittorie(), lArena, hArena, mp);
+            scena = new ScenaLivello(h.name, h.getVittorie(), lArena, hArena, musicP);
 
         scena.genArena(lArena, hArena);
         hero.scena = scena;
@@ -89,33 +88,26 @@ public class Livello {
             case EASY:
                 lArena = RANDOM.nextInt(5,7);
                 hArena = RANDOM.nextInt(5,7);
-                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
-
                 break;
             case MEDIUM:
                 //Generati il numero di nemici ed i nemici
                 lArena = RANDOM.nextInt(6,9);
                 hArena = RANDOM.nextInt(6,9);
-                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
-
                 break;
             case HARD:
                 //Generati il numero di nemici ed i nemici
                 lArena = RANDOM.nextInt(7,11);
                 hArena = RANDOM.nextInt(7,11);
-                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
-
                 break;
             case BOSS:
                 //Generati il numero di nemici, 1 boss ed il resto dei nemici
                 lArena = RANDOM.nextInt(8,13);
                 hArena = RANDOM.nextInt(8,13);
-
                 enemies.add(new Enemy(diff, hero.lvl, 0));
-                enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
                 break;
         }
 
+        enemies.addAll(new MobSpawner(lArena,hArena).SpawnEnemies(diff, hero.lvl));
 
     }
 
@@ -290,8 +282,11 @@ public class Livello {
             e.setActionsPerTurn(e.getDEX());
             while(e.getActionsPerTurn()>0)
             {
-                Action a = e.TakeAction(arena);
-                ExecuteTurn(a);
+                if(hero.getIsAlive())
+                {
+                    Action a = e.TakeAction(arena);
+                    ExecuteTurn(a);
+                }
                 e.decAPT();
             }
         }
